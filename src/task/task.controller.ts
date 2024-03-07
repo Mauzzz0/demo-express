@@ -38,8 +38,9 @@ const deleteOne = (req: Request, res: Response) => {
 
 const update = (req: Request, res: Response) => {
   const id = validate(req.params.id, Joi.number().integer().min(0).required());
+  const payload = validate(req.body, TaskSchema);
 
-  const result = TaskService.update(id);
+  const result = TaskService.update(id, payload);
 
   res.json(result);
 };
