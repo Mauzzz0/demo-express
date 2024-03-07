@@ -7,12 +7,15 @@ export const logRoutes = (server: any) => {
 
       const nestedHandlers = globalHandler.handle.stack;
 
+      console.log(`== ${globalPath.toUpperCase()} ==`);
       nestedHandlers.map((nestedHandler: any) => {
         const { methods, path } = nestedHandler.route;
 
         const method = Object.keys(methods)[0].toUpperCase();
 
-        console.log(`${method}: /${globalPath}${path}`);
+        const tabSize = 8;
+        const spaces = tabSize - method.length;
+        console.log(`${method}:${' '.repeat(spaces)}/${globalPath}${path}`);
       });
     }
   });

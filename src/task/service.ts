@@ -27,4 +27,8 @@ const deleteOne = (id: Task['id']) => {
   return id;
 };
 
-export const TaskService = { create, getAll, getOne, deleteOne };
+const update = (id: Task['id']) => {
+  return id;
+};
+
+export const TaskService = { create, getAll, getOne, deleteOne, update };

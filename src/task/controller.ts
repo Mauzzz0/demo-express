@@ -36,4 +36,12 @@ const deleteOne = (req: Request, res: Response) => {
   res.json(result);
 };
 
-export const TaskController = { create, getAll, getOne, deleteOne };
+const update = (req: Request, res: Response) => {
+  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+
+  const result = TaskService.update(id);
+
+  res.json(result);
+};
+
+export const TaskController = { create, getAll, getOne, deleteOne, update };
