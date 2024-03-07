@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
 import { PaginationSchema, TaskSchema } from './schemas';
-import { TaskService } from './service';
+import { TaskService } from './task.service';
 import Joi from 'joi';
 
 const create = (req: Request, res: Response) => {

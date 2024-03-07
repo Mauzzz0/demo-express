@@ -1,5 +1,5 @@
 import express from 'express';
-import { taskRouter } from './task/router';
+import { taskRouter } from './task/task.router';
 import bodyParser from 'body-parser';
 import { LogMiddleware } from './middlewares/LogMiddleware';
 import { ErrorHandler } from './middlewares/ErrorHandler';
