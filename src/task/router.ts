@@ -1,8 +1,7 @@
 import express from 'express';
-import { createOne, getAll, getOne } from './handlers';
+import { TaskController } from './controller';
 
 export const taskRouter = express.Router();
 
-taskRouter.get('/', getAll);
-taskRouter.get('/:id', getOne);
-taskRouter.post('/', createOne);
+taskRouter.get('/', TaskController.getAll);
+taskRouter.post('/', TaskController.create);
