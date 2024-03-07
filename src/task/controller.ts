@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
 import { PaginationSchema, TaskSchema } from './schemas';
 import { TaskService } from './service';
+import Joi from 'joi';
 
 const create = (req: Request, res: Response) => {
   const payload = validate(req.body, TaskSchema);
@@ -19,4 +20,20 @@ const getAll = (req: Request, res: Response) => {
   res.json(result);
 };
 
-export const TaskController = { create, getAll };
+const getOne = (req: Request, res: Response) => {
+  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+
+  const result = TaskService.getOne(id);
+
+  res.json(result);
+};
+
+const deleteOne = (req: Request, res: Response) => {
+  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+
+  const result = TaskService.deleteOne(id);
+
+  res.json(result);
+};
+
+export const TaskController = { create, getAll, getOne, deleteOne };
