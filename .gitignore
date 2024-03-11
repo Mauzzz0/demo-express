@@ -4,6 +4,7 @@
 
 # uploads
 /upload
+database.json
 
 # Logs
 logs
