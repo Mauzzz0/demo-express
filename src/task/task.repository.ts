@@ -32,8 +32,8 @@ export const taskRepository = {
     return storage.find((item) => item.id === id);
   },
 
-  findAll(limit: number, offset = 0): Task[] {
-    return storage.slice(offset, offset + limit);
+  findAll(limit: number, offset = 0, key: keyof Task): Task[] {
+    return storage.slice(offset, offset + limit).sort((a, b) => (a[key] > b[key] ? 1 : -1));
   },
 
   deleteOne(id: Task['id']): number {

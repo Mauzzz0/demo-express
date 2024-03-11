@@ -1,12 +1,12 @@
-import { CreateTask, Pagination, Task } from './task.types';
+import { CreateTask, PaginationAndSorting, Task } from './task.types';
 import { taskRepository } from './task.repository';
 
 const create = (task: CreateTask) => {
   return taskRepository.create(task);
 };
 
-const getAll = (pagination: Pagination) => {
-  return taskRepository.findAll(pagination.limit, pagination.offset);
+const getAll = (params: PaginationAndSorting) => {
+  return taskRepository.findAll(params.limit, params.offset, params.sort);
 };
 
 const getOne = (id: Task['id']) => {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
-import { PaginationSchema, TaskSchema } from './schemas';
+import { PaginationAndSortingSchema, TaskSchema } from './schemas';
 import { TaskService } from './task.service';
 import Joi from 'joi';
 
@@ -13,7 +13,7 @@ const create = (req: Request, res: Response) => {
 };
 
 const getAll = (req: Request, res: Response) => {
-  const payload = validate(req.query, PaginationSchema);
+  const payload = validate(req.query, PaginationAndSortingSchema);
 
   const result = TaskService.getAll(payload);
 
