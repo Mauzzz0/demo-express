@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
-import { PaginationAndSortingSchema, TaskSchema } from './schemas';
+import { PaginationAndSortingSchema, TaskSchema, PositiveNumberSchema } from './schemas';
 import { TaskService } from './task.service';
 import Joi from 'joi';
 
@@ -21,7 +21,7 @@ const getAll = (req: Request, res: Response) => {
 };
 
 const getOne = (req: Request, res: Response) => {
-  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+  const id = validate(req.params.id, PositiveNumberSchema);
 
   const result = TaskService.getOne(id);
 
@@ -29,7 +29,7 @@ const getOne = (req: Request, res: Response) => {
 };
 
 const deleteOne = (req: Request, res: Response) => {
-  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+  const id = validate(req.params.id, PositiveNumberSchema);
 
   const result = TaskService.deleteOne(id);
 

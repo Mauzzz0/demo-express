@@ -10,3 +10,5 @@ export const PaginationAndSortingSchema = Joi.object().keys({
   offset: Joi.number().integer().min(0).optional().default(0),
   sort: Joi.string().valid('id', 'title', 'description').optional().default('id'),
 });
+
+export const PositiveNumberSchema = Joi.number().integer().min(0).required();
