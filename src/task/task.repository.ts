@@ -14,6 +14,10 @@ if (fs.existsSync(filename)) {
 }
 
 export const taskRepository = {
+  get size() {
+    return storage.length;
+  },
+
   create(task: CreateTask): Task {
     const maxId = storage.map(extractId).sort(sortByDesc)[0] ?? 0;
 

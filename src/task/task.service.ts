@@ -6,7 +6,15 @@ const create = (task: CreateTask) => {
 };
 
 const getAll = (params: PaginationAndSorting) => {
-  return taskRepository.findAll(params.limit, params.offset, params.sort);
+  const { limit, offset, sort } = params;
+  const data = taskRepository.findAll(limit, offset, sort);
+
+  return {
+    total: taskRepository.size,
+    limit,
+    offset,
+    data,
+  };
 };
 
 const getOne = (id: Task['id']) => {
