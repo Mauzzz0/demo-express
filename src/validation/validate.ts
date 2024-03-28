@@ -1,3 +1,4 @@
+import { BadRequestException } from '../errors';
 import Joi from 'joi';
 
 export const validate = (
@@ -7,7 +8,7 @@ export const validate = (
   const validationResult = schema.validate(object);
 
   if (validationResult.error) {
-    throw Error(validationResult.error.message);
+    throw new BadRequestException(validationResult.error.message);
   }
 
   return validationResult.value;

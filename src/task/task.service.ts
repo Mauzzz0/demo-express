@@ -1,5 +1,6 @@
 import { CreateTask, PaginationAndSorting, Task } from './task.types';
 import { taskRepository } from './task.repository';
+import { NotFoundException } from '../errors';
 
 const create = (task: CreateTask) => {
   return taskRepository.create(task);
@@ -19,8 +20,9 @@ const getAll = (params: PaginationAndSorting) => {
 
 const getOne = (id: Task['id']) => {
   const task = taskRepository.findOne(id);
+
   if (!task) {
-    throw Error(`Task with id [${id}] is not exist`);
+    throw new NotFoundException(`Task with id [${id}] is not exist`);
   }
 
   return task;
