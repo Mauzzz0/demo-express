@@ -1,6 +1,10 @@
 import { Response, Request, NextFunction } from 'express';
 
-export const LogMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const LogMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   console.log(`[${req.method}]: ${req.url}`);
   console.log({
     query: req.query,

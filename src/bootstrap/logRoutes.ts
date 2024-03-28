@@ -38,5 +38,7 @@ const split = (path: any) => {
     .replace('(?=\\/|$)', '$')
     .match(/^\/\^((?:\\[.*+?^${}()|[\]\\/]|[^.*+?^${}()|[\]\\/])*)\$\//);
 
-  return match ? match[1].replace(/\\(.)/g, '$1').split('/') : '<complex:' + path.toString() + '>';
+  return match
+    ? match[1].replace(/\\(.)/g, '$1').split('/')
+    : '<complex:' + path.toString() + '>';
 };
