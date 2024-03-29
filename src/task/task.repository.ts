@@ -2,7 +2,7 @@ import { CreateTask, Task } from './task.types';
 import * as fs from 'fs';
 
 let storage: Task[] = [];
-const filename = 'database1.json';
+const filename = 'database2.json';
 const saveDatabaseToFile = () =>
   fs.writeFileSync(filename, JSON.stringify(storage));
 const extractId = ({ id }: { id: number }) => id;
