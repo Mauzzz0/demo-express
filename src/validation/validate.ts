@@ -1,7 +1,7 @@
 import { BadRequestException } from '../errors';
 import Joi from 'joi';
 
-export const validate = (object: any, schema: Joi.AnySchema) => {
+export const validate = <T = any>(object: any, schema: Joi.AnySchema<T>): T => {
   const validationResult = schema.validate(object);
 
   if (validationResult.error) {

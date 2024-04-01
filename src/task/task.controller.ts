@@ -6,7 +6,6 @@ import {
   PositiveNumberSchema,
 } from './schemas';
 import { TaskService } from './task.service';
-import Joi from 'joi';
 
 const create = (req: Request, res: Response) => {
   const payload = validate(req.body, TaskSchema);
@@ -41,7 +40,7 @@ const deleteOne = (req: Request, res: Response) => {
 };
 
 const update = (req: Request, res: Response) => {
-  const id = validate(req.params.id, Joi.number().integer().min(0).required());
+  const id = validate(req.params.id, PositiveNumberSchema);
   const payload = validate(req.body, TaskSchema);
 
   const result = TaskService.update(id, payload);
