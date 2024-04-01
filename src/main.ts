@@ -5,9 +5,7 @@ import bodyParser from 'body-parser';
 import { LogMiddleware } from './middlewares/LogMiddleware';
 import { ErrorHandler } from './middlewares/ErrorHandler';
 import { logRoutes } from './bootstrap/logRoutes';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from './config';
 
 const server = express();
 server.use(bodyParser.json());
@@ -20,8 +18,6 @@ server.use(ErrorHandler);
 
 logRoutes(server);
 
-const port = Number(process.env.PORT);
-
-server.listen(port, () => {
-  console.log(`Server is started on port ${port}...`);
+server.listen(config.PORT, () => {
+  console.log(`Server is started on port ${config.PORT}...`);
 });
