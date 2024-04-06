@@ -1,14 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import { taskRouter } from './task/task.router';
-import bodyParser from 'body-parser';
 import { LogMiddleware } from './middlewares/LogMiddleware';
 import { ErrorHandler } from './middlewares/ErrorHandler';
 import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
 
 const server = express();
-server.use(bodyParser.json());
+server.use(express.json());
 server.use(LogMiddleware);
 server.use(cors({ origin: '*' }));
 
