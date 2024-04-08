@@ -6,22 +6,19 @@ import SessionMiddleware from './middlewares/SessionMiddleware';
 import ErrorHandler from './middlewares/ErrorHandler';
 import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
+import { userRouter } from './user/user.router';
+import ViewsMiddleware from './middlewares/ViewsMiddleware';
 
 const server = express();
 
 server.use(SessionMiddleware);
+server.use(ViewsMiddleware);
 server.use(express.json());
 server.use(LogMiddleware);
 server.use(cors({ origin: '*' }));
 
-server.use('/session', (req, res) => {
-  const { views = 0 } = req.session;
-  req.session.views = views + 1;
-
-  res.json(req.session);
-});
-
 server.use('/task', taskRouter);
+server.use('/user', userRouter);
 
 server.use(ErrorHandler);
 
