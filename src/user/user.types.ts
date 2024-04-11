@@ -5,3 +5,7 @@ export type User = {
 };
 
 export type LoginDto = Pick<User, 'nick' | 'password'>;
+
+export type TokenDto = {
+  token: string;
+};

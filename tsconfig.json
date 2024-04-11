@@ -22,6 +22,6 @@
     "noUnusedParameters": false,
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

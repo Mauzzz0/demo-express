@@ -8,6 +8,7 @@ import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
 import { userRouter } from './user/user.router';
 import ViewsMiddleware from './middlewares/ViewsMiddleware';
+import JwtGuard from './guards/jwt.guard';
 
 const server = express();
 
@@ -17,8 +18,8 @@ server.use(express.json());
 server.use(LogMiddleware);
 server.use(cors({ origin: '*' }));
 
-server.use('/task', taskRouter);
 server.use('/user', userRouter);
+server.use('/task', JwtGuard, taskRouter);
 
 server.use(ErrorHandler);
 
