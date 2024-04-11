@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../errors/UnauthorizedException';
+import { JwtService } from './jwt.service';
 
 const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers['authorization'];
@@ -15,17 +15,19 @@ const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
     throw new UnauthorizedException();
   }
 
-  jwt.verify(token, 'a_secret', (err, payload) => {
-    if (err || typeof payload != 'object') {
-      throw new UnauthorizedException();
-    }
+  const valid = JwtService.verify(token, 'access');
 
-    res.locals = {
-      userId: payload.id,
-    };
+  if (!valid) {
+    throw new UnauthorizedException();
+  }
 
-    next();
-  });
+  const payload = JwtService.decode(token);
+
+  res.locals = {
+    userId: payload.id,
+  };
+
+  next();
 };
 
 export default JwtGuard;

@@ -2,7 +2,7 @@ import { validate } from '../validation/validate';
 import { LoginSchema, TokenSchema } from './schemas';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
-import { tokenRepository } from '../guards/tokens.repository';
+import { tokenRepository } from '../jwt/tokens.repository';
 
 const profile = (req: Request, res: Response) => {
   // const { userId } = req.session;

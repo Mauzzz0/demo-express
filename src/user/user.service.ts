@@ -1,9 +1,8 @@
 import { LoginDto, User } from './user.types';
 import { userRepository } from './user.repository';
 import { UnauthorizedException } from '../errors/UnauthorizedException';
-import { makeTokenPair } from '../helpers/jwt.helper';
-import { tokenRepository } from '../guards/tokens.repository';
-import jwt from 'jsonwebtoken';
+import { tokenRepository } from '../jwt/tokens.repository';
+import { JwtService } from '../jwt/jwt.service';
 
 const profile = (id: User['id']) => {
   return userRepository.findById(id);
@@ -16,7 +15,7 @@ const login = (dto: LoginDto) => {
     throw new UnauthorizedException('Password is not correct or nick is bad');
   }
 
-  const tokens = makeTokenPair({ id: user.id });
+  const tokens = JwtService.makeTokenPair({ id: user.id });
 
   tokenRepository.add(tokens.refreshToken);
 
@@ -24,27 +23,22 @@ const login = (dto: LoginDto) => {
 };
 
 const refresh = (token: string) => {
-  let accessToken = '';
-  let refreshToken = '';
+  const existsToken = tokenRepository.find(token);
 
-  jwt.verify(token, 'r_secret', (err, payload) => {
-    const existsToken = tokenRepository.find(token);
+  const valid = JwtService.verify(token, 'refresh');
 
-    if (err || !existsToken || typeof payload != 'object') {
-      throw new UnauthorizedException();
-    }
+  if (!valid || !existsToken) {
+    throw new UnauthorizedException();
+  }
 
-    const { id } = payload;
-    const pair = makeTokenPair({ id });
+  const { id } = JwtService.decode(token);
 
-    accessToken = pair.accessToken;
-    refreshToken = pair.refreshToken;
+  const pair = JwtService.makeTokenPair({ id });
 
-    tokenRepository.remove(token);
-    tokenRepository.add(refreshToken);
-  });
+  tokenRepository.remove(token);
+  tokenRepository.add(pair.refreshToken);
 
-  return { accessToken, refreshToken };
+  return pair;
 };
 
 export const UserService = { profile, login, refresh };

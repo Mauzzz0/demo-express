@@ -1,6 +1,6 @@
 import express from 'express';
 import { UserController } from './user.controller';
-import JwtGuard from '../guards/jwt.guard';
+import JwtGuard from '../jwt/jwt.guard';
 
 export const userRouter = express.Router();
 

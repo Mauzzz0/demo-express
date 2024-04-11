@@ -8,7 +8,7 @@ import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
 import { userRouter } from './user/user.router';
 import ViewsMiddleware from './middlewares/ViewsMiddleware';
-import JwtGuard from './guards/jwt.guard';
+import JwtGuard from './jwt/jwt.guard';
 
 const server = express();
 
