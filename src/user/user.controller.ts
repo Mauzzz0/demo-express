@@ -54,4 +54,12 @@ const refresh = (req: Request, res: Response) => {
   res.json(tokens);
 };
 
-export const UserController = { profile, login, logout, refresh };
+const signup = (req: Request, res: Response) => {
+  const body = validate(req.body, LoginSchema);
+
+  UserService.signup(body);
+
+  res.json({ success: true });
+};
+
+export const UserController = { profile, login, logout, refresh, signup };

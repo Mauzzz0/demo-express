@@ -3,6 +3,8 @@ import { userRepository } from './user.repository';
 import { UnauthorizedException } from '../errors/UnauthorizedException';
 import { tokenRepository } from '../jwt/tokens.repository';
 import { JwtService } from '../jwt/jwt.service';
+import { hashSync, compareSync } from 'bcrypt';
+import { BadRequestException } from '../errors';
 
 const profile = (id: User['id']) => {
   return userRepository.findById(id);
@@ -11,7 +13,7 @@ const profile = (id: User['id']) => {
 const login = (dto: LoginDto) => {
   const user = userRepository.findByNick(dto.nick);
 
-  if (!user || user.password != dto.password) {
+  if (!user || !compareSync(dto.password, user.password)) {
     throw new UnauthorizedException('Password is not correct or nick is bad');
   }
 
@@ -20,6 +22,20 @@ const login = (dto: LoginDto) => {
   tokenRepository.add(tokens.refreshToken);
 
   return tokens;
+};
+
+const signup = (dto: LoginDto) => {
+  const userWithSameNick = userRepository.findByNick(dto.nick);
+  if (userWithSameNick) {
+    throw new BadRequestException('User with this nick already exists');
+  }
+
+  const salt = 10;
+  dto.password = hashSync(dto.password, salt);
+
+  userRepository.save(dto);
+
+  return true;
 };
 
 const refresh = (token: string) => {
@@ -41,4 +57,4 @@ const refresh = (token: string) => {
   return pair;
 };
 
-export const UserService = { profile, login, refresh };
+export const UserService = { profile, login, refresh, signup };
