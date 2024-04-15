@@ -1,8 +1,8 @@
 let storage: string[] = [];
 
 export const tokenRepository = {
-  get size() {
-    return storage.length;
+  newUnusedMethod() {
+    // Просто пример нового пустого метода
   },
 
   add(token: string): number {
