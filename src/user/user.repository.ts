@@ -15,10 +15,6 @@ if (fs.existsSync(filename)) {
 }
 
 export const userRepository = {
-  get size() {
-    return storage.length;
-  },
-
   findByNick(nick: User['nick']): User | undefined {
     return storage.find((item) => item.nick === nick);
   },
