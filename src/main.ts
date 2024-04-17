@@ -9,6 +9,8 @@ import config from './config';
 import { userRouter } from './user/user.router';
 import ViewsMiddleware from './middlewares/ViewsMiddleware';
 import JwtGuard from './jwt/jwt.guard';
+import { startAndReturnBot } from './bot';
+import { spamTelegramJob } from './jobs/spam.telegram.job';
 
 const server = express();
 
@@ -28,3 +30,7 @@ logRoutes(server);
 server.listen(config.PORT, () => {
   console.log(`Server is started on port ${config.PORT}...`);
 });
+
+const tgBot = startAndReturnBot(config.TELEGRAM_TOKEN);
+
+spamTelegramJob(tgBot, config.TELEGRAM_CHAT_ID);
