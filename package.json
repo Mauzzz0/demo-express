@@ -19,6 +19,8 @@
     "express-session": "^1.18.0",
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.5",
+    "sequelize-typescript": "^2.1.6",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
