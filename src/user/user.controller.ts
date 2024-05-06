@@ -2,62 +2,43 @@ import { validate } from '../validation/validate';
 import { LoginSchema, TokenSchema } from './schemas';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
-import { tokenRepository } from '../jwt/tokens.repository';
+import { TokenModel } from '../database/models/token.model';
 
-const profile = (req: Request, res: Response) => {
-  // const { userId } = req.session;
-  // if (!userId) {
-  //   throw new UnauthorizedException();
-  // }
-
+const profile = async (req: Request, res: Response) => {
   const { userId } = res.locals;
-  const result = UserService.profile(userId);
+  const result = await UserService.profile(userId);
 
   res.json(result);
 };
 
-const login = (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   const body = validate(req.body, LoginSchema);
 
-  const tokens = UserService.login(body);
-
-  // req.session.userId = user.id;
+  const tokens = await UserService.login(body);
 
   res.json(tokens);
 };
 
-const logout = (req: Request, res: Response) => {
-  // const { userId } = req.session;
-  // if (!userId) {
-  //   throw new UnauthorizedException();
-  // }
-  // delete req.session.userId;
-
+const logout = async (req: Request, res: Response) => {
   const { body } = req;
   const { token } = validate(body, TokenSchema);
-  tokenRepository.remove(token); // Warn: Аксес токен будет ещё жить, клиент сам его должен удалить
+  await TokenModel.destroy({ where: { token } });
 
   res.json({ result: true });
 };
 
-const refresh = (req: Request, res: Response) => {
-  // const { userId } = req.session;
-  // if (!userId) {
-  //   throw new UnauthorizedException();
-  // }
-  // delete req.session.userId;
-
+const refresh = async (req: Request, res: Response) => {
   const { body } = req;
   const { token } = validate(body, TokenSchema);
-  const tokens = UserService.refresh(token);
+  const tokens = await UserService.refresh(token);
 
   res.json(tokens);
 };
 
-const signup = (req: Request, res: Response) => {
+const signup = async (req: Request, res: Response) => {
   const body = validate(req.body, LoginSchema);
 
-  UserService.signup(body);
+  await UserService.signup(body);
 
   res.json({ success: true });
 };

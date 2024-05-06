@@ -1,25 +1,29 @@
 import { CreateTask, PaginationAndSorting, Task } from './task.types';
-import { taskRepository } from './task.repository';
 import { NotFoundException } from '../errors';
+import { TaskModel } from '../database/models/task.model';
 
-const create = (task: CreateTask) => {
-  return taskRepository.create(task);
+const create = async (task: CreateTask) => {
+  return TaskModel.create(task);
 };
 
-const getAll = (params: PaginationAndSorting) => {
+const getAll = async (params: PaginationAndSorting) => {
   const { limit, offset, sort } = params;
-  const data = taskRepository.findAll(limit, offset, sort);
-
-  return {
-    total: taskRepository.size,
+  const { rows, count } = await TaskModel.findAndCountAll({
     limit,
     offset,
-    data,
+    order: [sort],
+  });
+
+  return {
+    total: count,
+    limit,
+    offset,
+    data: rows,
   };
 };
 
-const getOne = (id: Task['id']) => {
-  const task = taskRepository.findOne(id);
+const getOne = async (id: Task['id']) => {
+  const task = await TaskModel.findByPk(id);
 
   if (!task) {
     throw new NotFoundException(`Task with id [${id}] is not exist`);
@@ -28,16 +32,16 @@ const getOne = (id: Task['id']) => {
   return task;
 };
 
-const deleteOne = (id: Task['id']) => {
-  getOne(id);
+const deleteOne = async (id: Task['id']) => {
+  await getOne(id);
 
-  return taskRepository.deleteOne(id);
+  return TaskModel.destroy({ where: { id } });
 };
 
-const update = (id: Task['id'], data: CreateTask) => {
-  getOne(id);
+const update = async (id: Task['id'], data: CreateTask) => {
+  await getOne(id);
 
-  return taskRepository.update(id, data);
+  return TaskModel.update(data, { where: { id } });
 };
 
 export const TaskService = { create, getAll, getOne, deleteOne, update };

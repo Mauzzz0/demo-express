@@ -1,17 +1,17 @@
 import { LoginDto, User } from './user.types';
-import { userRepository } from './user.repository';
 import { UnauthorizedException } from '../errors/UnauthorizedException';
-import { tokenRepository } from '../jwt/tokens.repository';
 import { JwtService } from '../jwt/jwt.service';
-import { hashSync, compareSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import { BadRequestException } from '../errors';
+import { UserModel } from '../database/models/user.model';
+import { TokenModel } from '../database/models/token.model';
 
-const profile = (id: User['id']) => {
-  return userRepository.findById(id);
+const profile = async (id: User['id']) => {
+  return UserModel.findByPk(id);
 };
 
-const login = (dto: LoginDto) => {
-  const user = userRepository.findByNick(dto.nick);
+const login = async (dto: LoginDto) => {
+  const user = await UserModel.findOne({ where: { nick: dto.nick } });
 
   if (!user || !compareSync(dto.password, user.password)) {
     throw new UnauthorizedException('Password is not correct or nick is bad');
@@ -19,13 +19,16 @@ const login = (dto: LoginDto) => {
 
   const tokens = JwtService.makeTokenPair({ id: user.id });
 
-  tokenRepository.add(tokens.refreshToken);
+  await TokenModel.create({ token: tokens.refreshToken });
 
   return tokens;
 };
 
-const signup = (dto: LoginDto) => {
-  const userWithSameNick = userRepository.findByNick(dto.nick);
+const signup = async (dto: LoginDto) => {
+  const userWithSameNick = await UserModel.findOne({
+    where: { nick: dto.nick },
+  });
+
   if (userWithSameNick) {
     throw new BadRequestException('User with this nick already exists');
   }
@@ -33,13 +36,13 @@ const signup = (dto: LoginDto) => {
   const salt = 10;
   dto.password = hashSync(dto.password, salt);
 
-  userRepository.save(dto);
+  await UserModel.create(dto);
 
   return true;
 };
 
-const refresh = (token: string) => {
-  const existsToken = tokenRepository.find(token);
+const refresh = async (token: string) => {
+  const existsToken = await TokenModel.findOne({ where: { token } });
 
   const valid = JwtService.verify(token, 'refresh');
 
@@ -51,8 +54,8 @@ const refresh = (token: string) => {
 
   const pair = JwtService.makeTokenPair({ id });
 
-  tokenRepository.remove(token);
-  tokenRepository.add(pair.refreshToken);
+  await TokenModel.destroy({ where: { token } });
+  await TokenModel.create({ token: pair.refreshToken });
 
   return pair;
 };
