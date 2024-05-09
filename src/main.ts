@@ -13,6 +13,8 @@ import JwtGuard from './jwt/jwt.guard';
 import { connectDatabase } from './database/connect';
 import { startAndReturnBot } from './bot';
 import { spamTelegramJob } from './jobs/spam.telegram.job';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerDocument } from './swagger';
 
 const bootstrap = async () => {
   const server = express();
@@ -25,6 +27,8 @@ const bootstrap = async () => {
 
   server.use('/user', userRouter);
   server.use('/task', JwtGuard, taskRouter);
+
+  server.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   server.use(ErrorHandler);
 
