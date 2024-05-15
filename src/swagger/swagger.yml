@@ -1,0 +1,217 @@
+openapi: 3.1.0
+info:
+  title: API для работы с задачами
+  description: Моё описание
+  version: $VERSION
+tags:
+  - name: User
+    description: Действия с пользователями
+  - name: Task
+    description: Действия с задачами
+
+security:
+  - bearer: []
+
+paths:
+  /user/signup:
+    post:
+      tags:
+        - User
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/signupUser'
+        required: true
+
+      responses:
+        "200":
+          description: Пользователь зарегистрирован успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+
+        "400":
+          description: Данные неверные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+        "500":
+          description: Произошла ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Аутентификация пользователя
+      description: Аутентифицирует зарегистрированного пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/signupUser'
+        required: true
+
+      responses:
+        "200":
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenPair'
+
+
+
+  /user/refresh:
+    post:
+      tags:
+        - User
+      summary: Обновление access токена
+      description: Выдаёт новую пару access, refresh токенов
+
+  /user/logout:
+    post:
+      tags:
+        - User
+      summary: Удаление refresh токена пользователя
+      description: Удаляет refresh токен пользователя
+
+  /user/profile:
+    get:
+      tags:
+        - User
+      summary: Профиль пользователя
+      description: Возвращает профиль пользователя
+
+  /task:
+    get:
+      tags:
+        - Task
+      summary: Чтение списка задач
+      description: Возвращает список задач, с фильтром, сортировкой и пагинацией
+      parameters:
+        - $ref: '#/components/schemas/limit'
+        - $ref: '#/components/schemas/offset'
+        - name: enumExampleParameter
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - a
+              - b
+              - c
+              - d
+        - name: arrayExampleParameter
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+
+  /task/{id}:
+    get:
+      tags:
+        - Task
+      summary: Чтение одной задачи по её id
+      description: Возвращает задачу или ошибку
+      parameters:
+        - $ref: '#/components/schemas/numberId'
+
+    put:
+      tags:
+        - Task
+      summary: Обновление одной задачи по её id
+      description: Возвращает обновлённую задачу
+      parameters:
+        - $ref: '#/components/schemas/numberId'
+
+    delete:
+      tags:
+        - Task
+      summary: Удаление задачи по её id
+      description: Удаляет задачу
+      parameters:
+        - $ref: '#/components/schemas/numberId'
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    numberId:
+      name: id
+      required: true
+      in: path
+      schema:
+        type: number
+
+    limit:
+      name: limit
+      required: false
+      in: query
+      schema:
+        type: number
+        example: 10
+
+    offset:
+      name: offset
+      required: false
+      in: query
+      schema:
+        type: number
+        example: 0
+
+    signupUser:
+      type: object
+
+      properties:
+        nick:
+          type: string
+          example: nick
+
+        password:
+          type: string
+          example: password
+
+    success:
+      type: object
+      properties:
+        success:
+          type: boolean
+
+    tokenPair:
+      type: object
+
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    badRequest:
+      type: object
+
+      properties:
+        code:
+          type: string
+        message:
+          type: string

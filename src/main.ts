@@ -11,10 +11,7 @@ import { userRouter } from './user/user.router';
 import ViewsMiddleware from './middlewares/ViewsMiddleware';
 import JwtGuard from './jwt/jwt.guard';
 import { connectDatabase } from './database/connect';
-import { startAndReturnBot } from './bot';
-import { spamTelegramJob } from './jobs/spam.telegram.job';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerDocument } from './swagger';
+import { setupSwagger } from './swagger/setupSwagger';
 
 const bootstrap = async () => {
   const server = express();
@@ -27,8 +24,7 @@ const bootstrap = async () => {
 
   server.use('/user', userRouter);
   server.use('/task', JwtGuard, taskRouter);
-
-  server.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  setupSwagger(server);
 
   server.use(ErrorHandler);
 
@@ -38,10 +34,6 @@ const bootstrap = async () => {
   server.listen(config.PORT, () => {
     console.log(`Server is started on port ${config.PORT}...`);
   });
-
-  const tgBot = startAndReturnBot(config.TELEGRAM_TOKEN);
-
-  spamTelegramJob(tgBot, config.TELEGRAM_CHAT_ID);
 };
 
 bootstrap();
