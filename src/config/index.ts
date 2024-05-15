@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import { ConfigSchema } from './schema';
 
-const result = dotenv.config();
+const path = process.env.NODE_ENV === 'prod' ? '.env.production' : '.env';
+
+const result = dotenv.config({ path });
 
 if (result.error) {
   throw result.error;
