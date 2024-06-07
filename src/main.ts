@@ -1,17 +1,16 @@
 import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
-import { taskRouter } from './task/task.router';
 import LogMiddleware from './middlewares/LogMiddleware';
 import SessionMiddleware from './middlewares/SessionMiddleware';
 import ErrorHandler from './middlewares/ErrorHandler';
 import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
-import { userRouter } from './user/user.router';
 import ViewsMiddleware from './middlewares/ViewsMiddleware';
-import JwtGuard from './jwt/jwt.guard';
 import { connectDatabase } from './database/connect';
 import { setupSwagger } from './swagger/setupSwagger';
+import { taskController } from './task/task.module';
+import { userController } from './user/user.module';
 
 const bootstrap = async () => {
   const server = express();
@@ -22,8 +21,8 @@ const bootstrap = async () => {
   server.use(LogMiddleware);
   server.use(cors({ origin: '*' }));
 
-  server.use('/user', userRouter);
-  server.use('/task', JwtGuard, taskRouter);
+  server.use('/user', userController.router);
+  server.use('/task', taskController.router);
   setupSwagger(server);
 
   server.use(ErrorHandler);

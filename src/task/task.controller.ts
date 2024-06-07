@@ -1,51 +1,64 @@
 import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
-import {
-  PaginationAndSortingSchema,
-  PositiveNumberSchema,
-  TaskSchema,
-} from './schemas';
+import { PaginationAndSortingSchema, PositiveNumberSchema, TaskSchema } from './schemas';
 import { TaskService } from './task.service';
+import { BaseController } from '../shared/base.controller';
+import JwtGuard from '../jwt/jwt.guard';
 
-const create = async (req: Request, res: Response) => {
-  const payload = validate(req.body, TaskSchema);
+export class TaskController extends BaseController {
+  constructor(private readonly service: TaskService) {
+    super();
+    this.initRoutes();
+  }
 
-  const result = await TaskService.create(res.locals.userId, payload);
+  initRoutes() {
+    const middlewares = [JwtGuard];
 
-  res.json(result);
-};
+    this.addRoute({ path: '/', method: 'post', handler: this.create, middlewares });
+    this.addRoute({ path: '/', method: 'get', handler: this.getAll, middlewares });
+    this.addRoute({ path: '/:id', method: 'get', handler: this.getOne, middlewares });
+    this.addRoute({ path: '/:id', method: 'put', handler: this.update, middlewares });
+    this.addRoute({ path: '/:id', method: 'delete', handler: this.deleteOne, middlewares });
+  }
 
-const getAll = async (req: Request, res: Response) => {
-  const payload = validate(req.query, PaginationAndSortingSchema);
+  async create(req: Request, res: Response) {
+    const payload = validate(req.body, TaskSchema);
 
-  const result = await TaskService.getAll(res.locals.userId, payload);
+    const result = await this.service.create(res.locals.userId, payload);
 
-  res.json(result);
-};
+    res.json(result);
+  }
 
-const getOne = async (req: Request, res: Response) => {
-  const id = validate(req.params.id, PositiveNumberSchema);
+  async getAll(req: Request, res: Response) {
+    const payload = validate(req.query, PaginationAndSortingSchema);
 
-  const result = await TaskService.getOne(res.locals.userId, id);
+    const result = await this.service.getAll(res.locals.userId, payload);
 
-  res.json(result);
-};
+    res.json(result);
+  }
 
-const deleteOne = async (req: Request, res: Response) => {
-  const id = validate(req.params.id, PositiveNumberSchema);
+  async getOne(req: Request, res: Response) {
+    const id = validate(req.params.id, PositiveNumberSchema);
 
-  const result = await TaskService.deleteOne(res.locals.userId, id);
+    const result = await this.service.getOne(res.locals.userId, id);
 
-  res.json(result);
-};
+    res.json(result);
+  }
 
-const update = async (req: Request, res: Response) => {
-  const id = validate(req.params.id, PositiveNumberSchema);
-  const payload = validate(req.body, TaskSchema);
+  async deleteOne(req: Request, res: Response) {
+    const id = validate(req.params.id, PositiveNumberSchema);
 
-  const result = await TaskService.update(res.locals.userId, id, payload);
+    const result = await this.service.deleteOne(res.locals.userId, id);
 
-  res.json(result);
-};
+    res.json(result);
+  }
 
-export const TaskController = { create, getAll, getOne, deleteOne, update };
+  async update(req: Request, res: Response) {
+    const id = validate(req.params.id, PositiveNumberSchema);
+    const payload = validate(req.body, TaskSchema);
+
+    const result = await this.service.update(res.locals.userId, id, payload);
+
+    res.json(result);
+  }
+}

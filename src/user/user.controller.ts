@@ -3,44 +3,61 @@ import { LoginSchema, TokenSchema } from './schemas';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import { TokenModel } from '../database/models/token.model';
+import JwtGuard from '../jwt/jwt.guard';
+import { BaseController } from '../shared/base.controller';
 
-const profile = async (req: Request, res: Response) => {
-  const { userId } = res.locals;
-  const result = await UserService.profile(userId);
+export class UserController extends BaseController {
+  constructor(private readonly service: UserService) {
+    super();
+    this.initRoutes();
+  }
 
-  res.json(result);
-};
+  initRoutes() {
+    const middlewares = [JwtGuard];
 
-const login = async (req: Request, res: Response) => {
-  const body = validate(req.body, LoginSchema);
+    this.addRoute({ path: '/login', method: 'post', handler: this.login });
+    this.addRoute({ path: '/signup', method: 'post', handler: this.signup });
+    this.addRoute({ path: '/profile', handler: this.profile, middlewares: [JwtGuard] });
+    this.addRoute({ path: '/logout', method: 'post', handler: this.logout, middlewares });
+    this.addRoute({ path: '/refresh', method: 'post', handler: this.refresh, middlewares });
+  }
 
-  const tokens = await UserService.login(body);
+  async profile(req: Request, res: Response) {
+    const { userId } = res.locals;
+    const result = await this.service.profile(userId);
 
-  res.json(tokens);
-};
+    res.json(result);
+  }
 
-const logout = async (req: Request, res: Response) => {
-  const { body } = req;
-  const { token } = validate(body, TokenSchema);
-  await TokenModel.destroy({ where: { token } });
+  async login(req: Request, res: Response) {
+    const body = validate(req.body, LoginSchema);
 
-  res.json({ result: true });
-};
+    const tokens = await this.service.login(body);
 
-const refresh = async (req: Request, res: Response) => {
-  const { body } = req;
-  const { token } = validate(body, TokenSchema);
-  const tokens = await UserService.refresh(token);
+    res.json(tokens);
+  }
 
-  res.json(tokens);
-};
+  async logout(req: Request, res: Response) {
+    const { body } = req;
+    const { token } = validate(body, TokenSchema);
+    await TokenModel.destroy({ where: { token } });
 
-const signup = async (req: Request, res: Response) => {
-  const body = validate(req.body, LoginSchema);
+    res.json({ result: true });
+  }
 
-  await UserService.signup(body);
+  async refresh(req: Request, res: Response) {
+    const { body } = req;
+    const { token } = validate(body, TokenSchema);
+    const tokens = await this.service.refresh(token);
 
-  res.json({ success: true });
-};
+    res.json(tokens);
+  }
 
-export const UserController = { profile, login, logout, refresh, signup };
+  async signup(req: Request, res: Response) {
+    const body = validate(req.body, LoginSchema);
+
+    await this.service.signup(body);
+
+    res.json({ success: true });
+  }
+}
