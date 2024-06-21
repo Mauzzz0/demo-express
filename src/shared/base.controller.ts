@@ -4,7 +4,7 @@ import { Route } from './types';
 export abstract class BaseController {
   public readonly router: Router;
 
-  constructor() {
+  protected constructor() {
     this.router = Router();
   }
 
