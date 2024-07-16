@@ -1,11 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 
-const ErrorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const ErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (!err) next();
 
   console.log(err);

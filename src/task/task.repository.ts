@@ -3,8 +3,7 @@ import * as fs from 'fs';
 
 let storage: Task[] = [];
 const filename = 'database.json';
-const saveDatabaseToFile = () =>
-  fs.writeFileSync(filename, JSON.stringify(storage));
+const saveDatabaseToFile = () => fs.writeFileSync(filename, JSON.stringify(storage));
 const extractId = ({ id }: { id: number }) => id;
 const sortByDesc = (a: any, b: any) => (a < b ? 1 : -1);
 
@@ -38,9 +37,7 @@ export const taskRepository = {
   },
 
   findAll(limit: number, offset = 0, key: keyof Task): Task[] {
-    return storage
-      .slice(offset, offset + limit)
-      .sort((a, b) => (a[key] > b[key] ? 1 : -1));
+    return storage.slice(offset, offset + limit).sort((a, b) => (a[key] > b[key] ? 1 : -1));
   },
 
   deleteOne(id: Task['id']): number {

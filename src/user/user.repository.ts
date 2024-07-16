@@ -3,8 +3,7 @@ import { LoginDto, User } from './user.types';
 
 let storage: User[] = [];
 const filename = 'database_users.json';
-const saveDatabaseToFile = () =>
-  fs.writeFileSync(filename, JSON.stringify(storage));
+const saveDatabaseToFile = () => fs.writeFileSync(filename, JSON.stringify(storage));
 const extractId = ({ id }: { id: number }) => id;
 const sortByDesc = (a: any, b: any) => (a < b ? 1 : -1);
 

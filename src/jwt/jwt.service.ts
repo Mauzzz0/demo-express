@@ -15,8 +15,7 @@ const makeTokenPair = (payload: Record<string, any>): TokenPair => {
 const verify = (token: string, type: 'access' | 'refresh'): boolean => {
   let result = false;
 
-  const secret =
-    type === 'access' ? config.JWT_ACCESS_SECRET : config.JWT_REFRESH_SECRET;
+  const secret = type === 'access' ? config.JWT_ACCESS_SECRET : config.JWT_REFRESH_SECRET;
 
   jwt.verify(token, secret, (err) => {
     result = !err;
