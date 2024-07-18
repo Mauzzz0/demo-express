@@ -59,7 +59,7 @@ export class UserController extends BaseController {
   async signup(req: Request, res: Response) {
     const body = validate(Login, req.body);
 
-    await this.service.signup({} as any);
+    await this.service.signup(body);
 
     res.json({ success: true });
   }

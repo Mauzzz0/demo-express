@@ -1,7 +1,15 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export enum Environment {
+  prod = 'prod',
+  dev = 'dev',
+}
+
 export class ConfigDto {
+  @IsEnum(Environment)
+  ENV: Environment;
+
   @IsNumber()
   @Type(() => Number)
   PORT: number;

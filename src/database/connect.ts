@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import models from './models';
 import config from '../config';
+import { seeds } from './seeds';
 
 export const connectDatabase = async () => {
   const sequelize = new Sequelize({
@@ -16,6 +17,9 @@ export const connectDatabase = async () => {
   sequelize.addModels(models);
   await sequelize.sync({ alter: true });
   await sequelize.authenticate();
+  for (const seed of seeds) {
+    await seed();
+  }
 
   console.log('Successfully connected to database');
 
