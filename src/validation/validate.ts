@@ -1,12 +1,23 @@
 import { BadRequestException } from '../errors';
-import Joi from 'joi';
+import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
+import { Constructor } from './types';
 
-export const validate = <T = any>(object: any, schema: Joi.AnySchema<T>): T => {
-  const validationResult = schema.validate(object);
+export const validate = <T extends object, V>(cls: Constructor<T>, data: V): T => {
+  const instance = plainToInstance<T, V>(cls, data);
+  const errors = validateSync(instance);
 
-  if (validationResult.error) {
-    throw new BadRequestException(validationResult.error.message);
+  if (errors.length) {
+    const constraints = errors[0].constraints;
+    let message = 'Unknown validation error';
+
+    if (constraints) {
+      const key = Object.keys(constraints)[0];
+      message = constraints[key];
+    }
+
+    throw new BadRequestException(message);
   }
 
-  return validationResult.value;
+  return instance;
 };

@@ -1,17 +1,17 @@
-import { LoginDto, User } from './user.types';
 import { UnauthorizedException } from '../errors/UnauthorizedException';
 import { JwtService } from '../jwt/jwt.service';
 import { compareSync, hashSync } from 'bcrypt';
 import { BadRequestException } from '../errors';
 import { UserModel } from '../database/models/user.model';
 import { TokenModel } from '../database/models/token.model';
+import { Login, User } from './user.dto';
 
 export class UserService {
   async profile(id: User['id']) {
     return UserModel.findByPk(id);
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: Login) {
     const user = await UserModel.findOne({ where: { nick: dto.nick } });
 
     if (!user || !compareSync(dto.password, user.password)) {
@@ -25,7 +25,7 @@ export class UserService {
     return tokens;
   }
 
-  async signup(dto: LoginDto) {
+  async signup(dto: Login) {
     const userWithSameNick = await UserModel.findOne({
       where: { nick: dto.nick },
     });
@@ -37,6 +37,8 @@ export class UserService {
     const salt = 10;
     dto.password = hashSync(dto.password, salt);
 
+    // TODO: Починить
+    //@ts-ignore
     await UserModel.create(dto);
 
     return true;

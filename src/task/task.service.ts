@@ -1,13 +1,13 @@
-import { CreateTask, PaginationAndSorting, Task } from './task.types';
 import { NotFoundException } from '../errors';
 import { TaskModel } from '../database/models/task.model';
+import { CreateTask, PaginationAndSortingDto, Task } from './task.dto';
 
 export class TaskService {
   async create(userId: number, task: CreateTask) {
     return TaskModel.create({ ...task, userId });
   }
 
-  async getAll(userId: number, params: PaginationAndSorting) {
+  async getAll(userId: number, params: PaginationAndSortingDto) {
     const { limit, offset, sort } = params;
     const { rows, count } = await TaskModel.findAndCountAll({
       where: { userId },

@@ -1,27 +1,37 @@
-import Joi from 'joi';
+import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export type ConfigDto = {
+export class ConfigDto {
+  @IsNumber()
+  @Type(() => Number)
   PORT: number;
-  JWT_ACCESS_SECRET: string;
-  JWT_REFRESH_SECRET: string;
-  TELEGRAM_TOKEN: string;
-  TELEGRAM_CHAT_ID: number;
-  POSTGRESQL_HOST: string;
-  POSTGRESQL_DATABASE: string;
-  POSTGRESQL_USERNAME: string;
-  POSTGRESQL_PASSWORD: string;
-  POSTGRESQL_PORT: number;
-};
 
-export const ConfigSchema = Joi.object<ConfigDto>().keys({
-  PORT: Joi.number().port().required(),
-  JWT_ACCESS_SECRET: Joi.string().min(4).required(),
-  JWT_REFRESH_SECRET: Joi.string().min(4).required(),
-  TELEGRAM_TOKEN: Joi.string().required(),
-  TELEGRAM_CHAT_ID: Joi.number().required(),
-  POSTGRESQL_HOST: Joi.string().required(),
-  POSTGRESQL_DATABASE: Joi.string().required(),
-  POSTGRESQL_USERNAME: Joi.string().required(),
-  POSTGRESQL_PASSWORD: Joi.string().required(),
-  POSTGRESQL_PORT: Joi.number().port().required(),
-});
+  @IsString()
+  JWT_ACCESS_SECRET: string;
+
+  @IsString()
+  JWT_REFRESH_SECRET: string;
+
+  @IsString()
+  TELEGRAM_TOKEN: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  TELEGRAM_CHAT_ID: number;
+
+  @IsString()
+  POSTGRESQL_HOST: string;
+
+  @IsString()
+  POSTGRESQL_DATABASE: string;
+
+  @IsString()
+  POSTGRESQL_USERNAME: string;
+
+  @IsString()
+  POSTGRESQL_PASSWORD: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  POSTGRESQL_PORT: number;
+}

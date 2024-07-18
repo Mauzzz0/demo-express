@@ -1,10 +1,11 @@
 import { validate } from '../validation/validate';
-import { LoginSchema, TokenSchema } from './schemas';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import { TokenModel } from '../database/models/token.model';
 import JwtGuard from '../jwt/jwt.guard';
 import { BaseController } from '../shared/base.controller';
+import { Route } from '../shared/types';
+import { Login, Token } from './user.dto';
 
 export class UserController extends BaseController {
   constructor(private readonly service: UserService) {
@@ -15,11 +16,15 @@ export class UserController extends BaseController {
   initRoutes() {
     const middlewares = [JwtGuard];
 
-    this.addRoute({ path: '/login', method: 'post', handler: this.login });
-    this.addRoute({ path: '/signup', method: 'post', handler: this.signup });
-    this.addRoute({ path: '/profile', handler: this.profile, middlewares: [JwtGuard] });
-    this.addRoute({ path: '/logout', method: 'post', handler: this.logout, middlewares });
-    this.addRoute({ path: '/refresh', method: 'post', handler: this.refresh, middlewares });
+    const routes: Route[] = [
+      { path: '/login', method: 'post', handler: this.login },
+      { path: '/signup', method: 'post', handler: this.signup },
+      { path: '/profile', handler: this.profile, middlewares },
+      { path: '/logout', method: 'post', handler: this.logout, middlewares },
+      { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
+    ];
+
+    this.addRoute(routes);
   }
 
   async profile(req: Request, res: Response) {
@@ -30,7 +35,7 @@ export class UserController extends BaseController {
   }
 
   async login(req: Request, res: Response) {
-    const body = validate(req.body, LoginSchema);
+    const body = validate(Login, req.body);
 
     const tokens = await this.service.login(body);
 
@@ -38,25 +43,23 @@ export class UserController extends BaseController {
   }
 
   async logout(req: Request, res: Response) {
-    const { body } = req;
-    const { token } = validate(body, TokenSchema);
+    const { token } = validate(Token, req.body);
     await TokenModel.destroy({ where: { token } });
 
     res.json({ result: true });
   }
 
   async refresh(req: Request, res: Response) {
-    const { body } = req;
-    const { token } = validate(body, TokenSchema);
+    const { token } = validate(Token, req.body);
     const tokens = await this.service.refresh(token);
 
     res.json(tokens);
   }
 
   async signup(req: Request, res: Response) {
-    const body = validate(req.body, LoginSchema);
+    const body = validate(Login, req.body);
 
-    await this.service.signup(body);
+    await this.service.signup({} as any);
 
     res.json({ success: true });
   }

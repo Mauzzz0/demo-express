@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-import { ConfigSchema } from './schema';
+import { ConfigDto } from './schema';
+import { validate } from '../validation/validate';
 
 const path = process.env.NODE_ENV === 'prod' ? '.env.production' : '.env';
 
@@ -9,12 +10,6 @@ if (result.error) {
   throw result.error;
 }
 
-const validation = ConfigSchema.validate(result.parsed);
-
-if (validation.error) {
-  throw validation.error;
-}
-
-const config = validation.value;
+const config = validate(ConfigDto, result.parsed);
 
 export default config;

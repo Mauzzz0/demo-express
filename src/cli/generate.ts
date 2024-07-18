@@ -1,10 +1,13 @@
 import { validate } from '../validation/validate';
-import { PositiveNumberSchema } from '../task/schemas';
 import { taskRepository } from '../task/task.repository';
 import { getRandomItems, upperFirst } from './utils';
 import { words } from './mock.values';
+import { GenerateCommandOptions } from './dto';
 
-const count = validate(process.argv[2], PositiveNumberSchema);
+const params = {
+  count: process.argv[2],
+};
+const { count } = validate(GenerateCommandOptions, params);
 
 for (let i = 0; i < count; i++) {
   const title = getRandomItems(words, 3).join(' ');
