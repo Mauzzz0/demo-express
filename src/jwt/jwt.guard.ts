@@ -25,6 +25,7 @@ const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
 
   res.locals = {
     userId: payload.id,
+    // userRole: payload.role,
   };
 
   next();
