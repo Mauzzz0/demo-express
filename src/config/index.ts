@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-import { ConfigDto } from './config.dto';
+
 import { validate } from '../validation/validate';
+import { ConfigDto } from './config.dto';
 
 const path = process.env.NODE_ENV === 'prod' ? '.env.production' : '.env';
 

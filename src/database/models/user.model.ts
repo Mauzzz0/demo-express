@@ -1,4 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+
 import { TaskModel } from './task.model';
 
 @Table({ tableName: 'users' })

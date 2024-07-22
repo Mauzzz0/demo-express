@@ -1,11 +1,12 @@
-import { validate } from '../validation/validate';
-import { UserService } from './user.service';
 import { Request, Response } from 'express';
+
 import { TokenModel } from '../database/models/token.model';
 import JwtGuard from '../guards/jwt.guard';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
+import { validate } from '../validation/validate';
 import { Login, Token } from './user.dto';
+import { UserService } from './user.service';
 
 export class UserController extends BaseController {
   constructor(private readonly service: UserService) {

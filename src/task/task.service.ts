@@ -1,5 +1,5 @@
-import { NotFoundException } from '../errors';
 import { TaskModel } from '../database/models/task.model';
+import { NotFoundException } from '../errors';
 import { CreateTask, PaginationAndSortingDto, Task } from './task.dto';
 
 export class TaskService {

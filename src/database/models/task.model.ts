@@ -1,4 +1,5 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+
 import { UserModel } from './user.model';
 
 @Table({ tableName: 'tasks' })

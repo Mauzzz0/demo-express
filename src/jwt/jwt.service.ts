@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { TokenPair } from './jwt.types';
+
 import config from '../config';
 import { BadRequestException } from '../errors';
+import { TokenPair } from './jwt.types';
 
 const makeTokenPair = (payload: Record<string, any>): TokenPair => {
   const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {

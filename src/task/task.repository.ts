@@ -1,5 +1,6 @@
-import { CreateTask, Task } from './task.types';
 import * as fs from 'fs';
+
+import { CreateTask, Task } from './task.types';
 
 let storage: Task[] = [];
 const filename = 'database.json';

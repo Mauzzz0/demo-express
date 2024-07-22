@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import { validate } from '../validation/validate';
-import { TaskService } from './task.service';
-import { BaseController } from '../shared/base.controller';
+
 import JwtGuard from '../guards/jwt.guard';
+import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
-import { CreateTask, PaginationAndSortingDto } from './task.dto';
 import { IdNumberDto } from '../validation/dto';
+import { validate } from '../validation/validate';
+import { CreateTask, PaginationAndSortingDto } from './task.dto';
+import { TaskService } from './task.service';
 
 export class TaskController extends BaseController {
   constructor(private readonly service: TaskService) {

@@ -1,14 +1,16 @@
 import 'express-async-errors';
 import 'reflect-metadata';
-import express from 'express';
+
 import cors from 'cors';
-import LogMiddleware from './middlewares/LogMiddleware';
-import SessionMiddleware from './middlewares/SessionMiddleware';
-import ErrorHandler from './middlewares/ErrorHandler';
+import express from 'express';
+
 import { logRoutes } from './bootstrap/logRoutes';
 import config from './config';
-import ViewsMiddleware from './middlewares/ViewsMiddleware';
 import { connectDatabase } from './database/connect';
+import ErrorHandler from './middlewares/ErrorHandler';
+import LogMiddleware from './middlewares/LogMiddleware';
+import SessionMiddleware from './middlewares/SessionMiddleware';
+import ViewsMiddleware from './middlewares/ViewsMiddleware';
 import { setupSwagger } from './swagger/setupSwagger';
 import { taskController } from './task/task.module';
 import { userController } from './user/user.module';

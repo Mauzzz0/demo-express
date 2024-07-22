@@ -1,7 +1,8 @@
+import { hashSync } from 'bcrypt';
+
 import config from '../../config';
 import { Environment } from '../../config/config.dto';
 import { UserModel } from '../models';
-import { hashSync } from 'bcrypt';
 
 export const adminSeed = async () => {
   if (config.ENV === Environment.dev) {

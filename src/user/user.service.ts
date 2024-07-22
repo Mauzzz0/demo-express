@@ -1,9 +1,10 @@
-import { JwtService } from '../jwt/jwt.service';
 import { compareSync, hashSync } from 'bcrypt';
-import { BadRequestException, UnauthorizedException } from '../errors';
-import { UserModel, TokenModel } from '../database/models';
-import { Login, User } from './user.dto';
+
 import config from '../config';
+import { TokenModel, UserModel } from '../database/models';
+import { BadRequestException, UnauthorizedException } from '../errors';
+import { JwtService } from '../jwt/jwt.service';
+import { Login, User } from './user.dto';
 
 export class UserService {
   async profile(id: User['id']) {

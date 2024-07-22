@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
 

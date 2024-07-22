@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 const ViewsMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const { views = 0 } = req.session;

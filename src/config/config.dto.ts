@@ -1,5 +1,5 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 export enum Environment {
   prod = 'prod',

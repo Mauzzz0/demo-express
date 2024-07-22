@@ -1,8 +1,8 @@
-import { validate } from '../validation/validate';
 import { taskRepository } from '../task/task.repository';
-import { getRandomItems, upperFirst } from './utils';
-import { words } from './mock.values';
+import { validate } from '../validation/validate';
 import { GenerateCommandOptions } from './dto';
+import { words } from './mock.values';
+import { getRandomItems, upperFirst } from './utils';
 
 const params = {
   count: process.argv[2],

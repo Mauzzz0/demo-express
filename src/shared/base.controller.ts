@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { Route } from './types';
 
 export abstract class BaseController {

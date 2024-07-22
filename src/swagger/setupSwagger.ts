@@ -1,7 +1,7 @@
 import { Express } from 'express';
+import { readFileSync } from 'fs';
 import swaggerUi from 'swagger-ui-express';
 import { parse } from 'yaml';
-import { readFileSync } from 'fs';
 
 export const setupSwagger = (server: Express) => {
   let file = readFileSync('./src/swagger/swagger.yml', 'utf8');

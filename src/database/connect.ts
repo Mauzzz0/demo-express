@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
-import { models } from './models';
+
 import config from '../config';
+import { models } from './models';
 import { seeds } from './seeds';
 
 export const connectDatabase = async () => {
