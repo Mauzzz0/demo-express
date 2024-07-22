@@ -1,9 +1,9 @@
 import { TaskModel } from '../database/models/task.model';
 import { NotFoundException } from '../errors';
-import { CreateTask, PaginationAndSortingDto, Task } from './task.dto';
+import { CreateTaskDto, PaginationAndSortingDto, Task } from './task.dto';
 
 export class TaskService {
-  async create(userId: number, task: CreateTask) {
+  async create(userId: number, task: CreateTaskDto) {
     return TaskModel.create({ ...task, userId });
   }
 
@@ -42,7 +42,7 @@ export class TaskService {
     return TaskModel.destroy({ where: { id, userId } });
   }
 
-  async update(userId: number, id: Task['id'], data: CreateTask) {
+  async update(userId: number, id: Task['id'], data: CreateTaskDto) {
     await this.getOne(userId, id);
 
     return TaskModel.update(data, { where: { id, userId } });

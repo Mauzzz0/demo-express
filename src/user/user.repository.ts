@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { LoginDto, User } from './user.types';
+import { LoginDto, User } from './user.dto';
 
 let storage: User[] = [];
 const filename = 'database_users.json';

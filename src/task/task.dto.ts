@@ -1,6 +1,6 @@
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 
-export class CreateTask {
+export class CreateTaskDto {
   @IsString()
   title: string;
 
@@ -8,7 +8,7 @@ export class CreateTask {
   description: string;
 }
 
-export class Task extends CreateTask {
+export class Task extends CreateTaskDto {
   id: number;
 }
 

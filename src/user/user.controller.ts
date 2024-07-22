@@ -5,7 +5,7 @@ import JwtGuard from '../guards/jwt.guard';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { validate } from '../validation/validate';
-import { Login, Token } from './user.dto';
+import { LoginDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
 
 export class UserController extends BaseController {
@@ -36,7 +36,7 @@ export class UserController extends BaseController {
   }
 
   async login(req: Request, res: Response) {
-    const body = validate(Login, req.body);
+    const body = validate(LoginDto, req.body);
 
     const tokens = await this.service.login(body);
 
@@ -44,21 +44,21 @@ export class UserController extends BaseController {
   }
 
   async logout(req: Request, res: Response) {
-    const { token } = validate(Token, req.body);
+    const { token } = validate(TokenDto, req.body);
     await TokenModel.destroy({ where: { token } });
 
     res.json({ result: true });
   }
 
   async refresh(req: Request, res: Response) {
-    const { token } = validate(Token, req.body);
+    const { token } = validate(TokenDto, req.body);
     const tokens = await this.service.refresh(token);
 
     res.json(tokens);
   }
 
   async signup(req: Request, res: Response) {
-    const body = validate(Login, req.body);
+    const body = validate(LoginDto, req.body);
 
     await this.service.signup(body);
 

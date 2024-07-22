@@ -5,7 +5,7 @@ import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { IdNumberDto } from '../validation/dto';
 import { validate } from '../validation/validate';
-import { CreateTask, PaginationAndSortingDto } from './task.dto';
+import { CreateTaskDto, PaginationAndSortingDto } from './task.dto';
 import { TaskService } from './task.service';
 
 export class TaskController extends BaseController {
@@ -29,7 +29,7 @@ export class TaskController extends BaseController {
   }
 
   async create(req: Request, res: Response) {
-    const payload = validate(CreateTask, req.body);
+    const payload = validate(CreateTaskDto, req.body);
 
     const result = await this.service.create(res.locals.userId, payload);
 
@@ -62,7 +62,7 @@ export class TaskController extends BaseController {
 
   async update(req: Request, res: Response) {
     const { id } = validate(IdNumberDto, req.params);
-    const payload = validate(CreateTask, req.body);
+    const payload = validate(CreateTaskDto, req.body);
 
     const result = await this.service.update(res.locals.userId, id, payload);
 

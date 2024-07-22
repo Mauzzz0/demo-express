@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class Login {
+export class LoginDto {
   @IsString()
   nick: string;
 
@@ -8,11 +8,11 @@ export class Login {
   password: string;
 }
 
-export class User extends Login {
+export class User extends LoginDto {
   id: number;
 }
 
-export class Token {
+export class TokenDto {
   @IsString()
   token: string;
 }

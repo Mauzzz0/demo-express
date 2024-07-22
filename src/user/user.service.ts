@@ -4,14 +4,14 @@ import config from '../config';
 import { TokenModel, UserModel } from '../database/models';
 import { BadRequestException, UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
-import { Login, User } from './user.dto';
+import { LoginDto, User } from './user.dto';
 
 export class UserService {
   async profile(id: User['id']) {
     return UserModel.findByPk(id);
   }
 
-  async login(dto: Login) {
+  async login(dto: LoginDto) {
     const user = await UserModel.findOne({ where: { nick: dto.nick } });
 
     if (!user || !compareSync(dto.password, user.password)) {
@@ -25,7 +25,7 @@ export class UserService {
     return tokens;
   }
 
-  async signup(dto: Login) {
+  async signup(dto: LoginDto) {
     const userWithSameNick = await UserModel.findOne({
       where: { nick: dto.nick },
     });
