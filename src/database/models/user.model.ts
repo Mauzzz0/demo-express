@@ -19,7 +19,14 @@ export class UserModel extends Model {
   public password: string;
 
   @HasMany(() => TaskModel, {
-    as: 'tasks',
+    as: 'authoredTasks',
+    foreignKey: 'authorId',
   })
-  public tasks: TaskModel[];
+  public authoredTasks: TaskModel[];
+
+  @HasMany(() => TaskModel, {
+    as: 'assignedTasks',
+    foreignKey: 'assigneeId',
+  })
+  public assignedTasks: TaskModel[];
 }

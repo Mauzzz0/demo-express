@@ -23,12 +23,26 @@ export class TaskModel extends Model {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  public userId: number;
+  public authorId: number;
 
   @BelongsTo(() => UserModel, {
-    as: 'user',
-    foreignKey: 'userId',
+    as: 'author',
+    foreignKey: 'authorId',
     onDelete: 'CASCADE',
   })
-  public user: UserModel;
+  public author: UserModel;
+
+  @ForeignKey(() => UserModel)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  public assigneeId: number;
+
+  @BelongsTo(() => UserModel, {
+    as: 'assignee',
+    foreignKey: 'assigneeId',
+    onDelete: 'CASCADE',
+  })
+  public assignee: UserModel;
 }
