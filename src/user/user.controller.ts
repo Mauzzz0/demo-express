@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { TokenModel } from '../database/models';
-import JwtGuard from '../guards/jwt.guard';
+import { JwtGuard } from '../guards';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { validate } from '../validation/validate';

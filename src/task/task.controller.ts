@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
-import JwtGuard from '../guards/jwt.guard';
+import { UserRole } from '../database/models';
+import { JwtGuard, RoleGuard } from '../guards';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { IdNumberDto } from '../validation/dto';
@@ -22,7 +23,12 @@ export class TaskController extends BaseController {
       { path: '/', method: 'get', handler: this.getAll, middlewares },
       { path: '/:id', method: 'get', handler: this.getOne, middlewares },
       { path: '/:id', method: 'put', handler: this.update, middlewares },
-      { path: '/:id', method: 'delete', handler: this.deleteOne, middlewares },
+      {
+        path: '/:id',
+        method: 'delete',
+        handler: this.deleteOne,
+        middlewares: [...middlewares, RoleGuard(UserRole.admin)],
+      },
     ];
 
     this.addRoute(routes);
@@ -39,7 +45,7 @@ export class TaskController extends BaseController {
   async getAll(req: Request, res: Response) {
     const payload = validate(PaginationAndSortingDto, req.query);
 
-    const result = await this.service.getAll(res.locals.userId, payload);
+    const result = await this.service.getAll(payload);
 
     res.json(result);
   }
@@ -47,7 +53,7 @@ export class TaskController extends BaseController {
   async getOne(req: Request, res: Response) {
     const { id } = validate(IdNumberDto, req.params);
 
-    const result = await this.service.getOne(res.locals.userId, id);
+    const result = await this.service.getOne(id);
 
     res.json(result);
   }
@@ -55,7 +61,7 @@ export class TaskController extends BaseController {
   async deleteOne(req: Request, res: Response) {
     const { id } = validate(IdNumberDto, req.params);
 
-    const result = await this.service.deleteOne(res.locals.userId, id);
+    const result = await this.service.deleteOne(id);
 
     res.json(result);
   }
@@ -64,7 +70,7 @@ export class TaskController extends BaseController {
     const { id } = validate(IdNumberDto, req.params);
     const payload = validate(CreateTaskDto, req.body);
 
-    const result = await this.service.update(res.locals.userId, id, payload);
+    const [_, [result]] = await this.service.update(id, payload);
 
     res.json(result);
   }

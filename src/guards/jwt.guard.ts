@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
 
-const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
+export const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers['authorization'];
 
   if (!authorization) {
@@ -31,5 +31,3 @@ const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
-
-export default JwtGuard;
