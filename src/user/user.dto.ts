@@ -1,4 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+
+import { UserRole } from '../database/models';
 
 export class LoginDto {
   @IsString()
@@ -8,8 +10,10 @@ export class LoginDto {
   password: string;
 }
 
-export class User extends LoginDto {
-  id: number;
+export class RegisterDto extends LoginDto {
+  @IsEnum(UserRole)
+  @IsOptional()
+  role?: UserRole;
 }
 
 export class TokenDto {

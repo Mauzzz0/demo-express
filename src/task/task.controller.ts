@@ -37,7 +37,7 @@ export class TaskController extends BaseController {
   async create(req: Request, res: Response) {
     const payload = validate(CreateTaskDto, req.body);
 
-    const result = await this.service.create(res.locals.userId, payload);
+    const result = await this.service.create(res.locals.user.id, payload);
 
     res.json(result);
   }

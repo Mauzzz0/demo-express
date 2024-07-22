@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 
-import { TokenModel } from '../database/models';
-import { JwtGuard } from '../guards';
+import { TokenModel, UserRole } from '../database/models';
+import { JwtGuard, RoleGuard } from '../guards';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { validate } from '../validation/validate';
-import { LoginDto, TokenDto } from './user.dto';
+import { LoginDto, RegisterDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
 
 export class UserController extends BaseController {
@@ -19,7 +19,12 @@ export class UserController extends BaseController {
 
     const routes: Route[] = [
       { path: '/login', method: 'post', handler: this.login },
-      { path: '/signup', method: 'post', handler: this.signup },
+      {
+        path: '/register',
+        method: 'post',
+        handler: this.register,
+        middlewares: [...middlewares, RoleGuard(UserRole.admin)],
+      },
       { path: '/profile', handler: this.profile, middlewares },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
       { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
@@ -29,8 +34,10 @@ export class UserController extends BaseController {
   }
 
   async profile(req: Request, res: Response) {
-    const { userId } = res.locals;
-    const result = await this.service.profile(userId);
+    const {
+      user: { id },
+    } = res.locals;
+    const result = await this.service.profile(id);
 
     res.json(result);
   }
@@ -57,10 +64,10 @@ export class UserController extends BaseController {
     res.json(tokens);
   }
 
-  async signup(req: Request, res: Response) {
-    const body = validate(LoginDto, req.body);
+  async register(req: Request, res: Response) {
+    const body = validate(RegisterDto, req.body);
 
-    await this.service.signup(body);
+    await this.service.register(body);
 
     res.json({ success: true });
   }

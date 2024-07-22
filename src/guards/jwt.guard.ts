@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { UserModel } from '../database/models';
 import { UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
 
-export const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
+export const JwtGuard = async (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers['authorization'];
 
   if (!authorization) {
@@ -24,9 +25,16 @@ export const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
 
   const payload = JwtService.decode(token);
 
+  const user = await UserModel.findOne({ where: { id: payload?.id } });
+  if (!user || !user.active) {
+    throw new UnauthorizedException();
+  }
+
   res.locals = {
-    userId: payload.id,
-    // userRole: payload.role,
+    user: {
+      id: payload.id,
+      role: payload.role,
+    },
   };
 
   next();

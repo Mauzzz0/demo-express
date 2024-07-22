@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 
-import { LoginDto, User } from './user.dto';
+import { UserModel } from '../database/models';
+import { LoginDto } from './user.dto';
 
-let storage: User[] = [];
+let storage: Partial<UserModel>[] = [];
 const filename = 'database_users.json';
 const saveDatabaseToFile = () => fs.writeFileSync(filename, JSON.stringify(storage));
 const extractId = ({ id }: { id: number }) => id;
@@ -15,11 +16,11 @@ if (fs.existsSync(filename)) {
 }
 
 export const userRepository = {
-  findByNick(nick: User['nick']): User | undefined {
+  findByNick(nick: UserModel['nick']): UserModel | undefined {
     return storage.find((item) => item.nick === nick);
   },
 
-  findById(id: User['id']): User | undefined {
+  findById(id: UserModel['id']): UserModel | undefined {
     return storage.find((item) => item.id === id);
   },
 

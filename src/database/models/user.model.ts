@@ -28,6 +28,13 @@ export class UserModel extends Model {
   })
   public role: UserRole;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  })
+  public active: boolean;
+
   @Column({ type: DataType.STRING, allowNull: true })
   public password: string;
 

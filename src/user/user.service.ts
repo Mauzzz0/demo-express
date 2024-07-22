@@ -2,12 +2,12 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import config from '../config';
 import { TokenModel, UserModel } from '../database/models';
-import { BadRequestException, UnauthorizedException } from '../errors';
+import { BadRequestException, ForbiddenException, UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
-import { LoginDto, User } from './user.dto';
+import { LoginDto } from './user.dto';
 
 export class UserService {
-  async profile(id: User['id']) {
+  async profile(id: UserModel['id']) {
     return UserModel.findByPk(id);
   }
 
@@ -18,14 +18,18 @@ export class UserService {
       throw new UnauthorizedException('Password is not correct or nick is bad');
     }
 
+    if (!user.active) {
+      throw new ForbiddenException();
+    }
+
     const tokens = JwtService.makeTokenPair({ id: user.id });
 
-    await TokenModel.create({ token: tokens.refreshToken });
+    await TokenModel.create({ token: tokens.refreshToken, userId: user.id });
 
     return tokens;
   }
 
-  async signup(dto: LoginDto) {
+  async register(dto: LoginDto) {
     const userWithSameNick = await UserModel.findOne({
       where: { nick: dto.nick },
     });
@@ -36,8 +40,8 @@ export class UserService {
 
     dto.password = hashSync(dto.password, config.SALT);
 
-    // TODO: Починить
-    //@ts-ignore
+    // TODO: Пофиксить
+    // @ts-ignore
     await UserModel.create(dto);
 
     return true;
