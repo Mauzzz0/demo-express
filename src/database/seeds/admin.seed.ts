@@ -2,12 +2,13 @@ import { hashSync } from 'bcrypt';
 
 import config from '../../config';
 import { Environment } from '../../config/config.dto';
-import { UserModel } from '../models';
+import { UserModel, UserRole } from '../models';
 
 export const adminSeed = async () => {
   if (config.ENV === Environment.dev) {
     const admin = {
       nick: config.ADMIN_NICK,
+      role: UserRole.admin,
       password: hashSync(config.ADMIN_PASSWORD, config.SALT),
     };
 

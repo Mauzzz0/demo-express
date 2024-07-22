@@ -2,6 +2,12 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize
 
 import { UserModel } from './user.model';
 
+enum TaskSeverity {
+  low = 'low',
+  medium = 'medium',
+  high = 'high',
+}
+
 @Table({ tableName: 'tasks' })
 export class TaskModel extends Model {
   @Column({
@@ -17,6 +23,14 @@ export class TaskModel extends Model {
 
   @Column({ type: DataType.STRING, allowNull: true })
   public description: string;
+
+  @Column({
+    type: DataType.ENUM,
+    allowNull: false,
+    defaultValue: TaskSeverity.medium,
+    values: Object.values(TaskSeverity),
+  })
+  public severity: TaskSeverity;
 
   @ForeignKey(() => UserModel)
   @Column({
