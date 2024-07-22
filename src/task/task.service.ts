@@ -1,4 +1,4 @@
-import { TaskModel } from '../database/models/task.model';
+import { TaskModel } from '../database/models';
 import { NotFoundException } from '../errors';
 import { CreateTaskDto, PaginationAndSortingDto, Task } from './task.dto';
 

@@ -4,8 +4,8 @@ import { Telegraf } from 'telegraf';
 export const spamTelegramJob = (bot: Telegraf, chatId: number) =>
   new CronJob(
     '* * * * * *',
-    function () {
-      bot.telegram.sendMessage(chatId, new Date().toISOString());
+    async function () {
+      await bot.telegram.sendMessage(chatId, new Date().toISOString());
     },
     null,
     true,

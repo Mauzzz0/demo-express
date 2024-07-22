@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { TokenModel } from '../database/models/token.model';
+import { TokenModel } from '../database/models';
 import JwtGuard from '../guards/jwt.guard';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
