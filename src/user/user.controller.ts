@@ -2,7 +2,7 @@ import { validate } from '../validation/validate';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import { TokenModel } from '../database/models/token.model';
-import JwtGuard from '../jwt/jwt.guard';
+import JwtGuard from '../guards/jwt.guard';
 import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { Login, Token } from './user.dto';

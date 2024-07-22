@@ -1,17 +1,19 @@
 import config from '../../config';
 import { Environment } from '../../config/config.dto';
-import { UserModel } from '../models/user.model';
+import { UserModel } from '../models';
+import { hashSync } from 'bcrypt';
 
 export const adminSeed = async () => {
   if (config.ENV === Environment.dev) {
     const admin = {
-      nick: 'admin',
-      password: '$2b$10$y1TSrZDesZetxcbH97fpFO2pxVB4XLk5jRePuGVs2kCQA26XqBsTK',
+      nick: config.ADMIN_NICK,
+      password: hashSync(config.ADMIN_PASSWORD, config.SALT),
     };
 
-    const exists = await UserModel.findOne({ where: admin });
+    const exists = await UserModel.findOne({ where: { nick: admin.nick } });
     if (!exists) {
       await UserModel.create(admin);
+      console.log('Successfully seeded default admin');
     }
   }
 };

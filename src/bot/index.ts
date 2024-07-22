@@ -1,9 +1,9 @@
 import { Telegraf } from 'telegraf';
 
-export const startAndReturnBot = (token: string) => {
+export const startAndReturnBot = async (token: string) => {
   const bot = new Telegraf(token);
   bot.start((ctx) => ctx.reply('Welcome'));
-  bot.launch();
+  await bot.launch();
 
   process.once('SIGINT', () => bot.stop('SIGINT'));
   process.once('SIGTERM', () => bot.stop('SIGTERM'));

@@ -14,11 +14,21 @@ export class ConfigDto {
   @Type(() => Number)
   PORT: number;
 
+  @IsNumber()
+  @Type(() => Number)
+  SALT: number;
+
   @IsString()
   JWT_ACCESS_SECRET: string;
 
   @IsString()
   JWT_REFRESH_SECRET: string;
+
+  @IsString()
+  ADMIN_NICK: string;
+
+  @IsString()
+  ADMIN_PASSWORD: string;
 
   @IsString()
   TELEGRAM_TOKEN: string;

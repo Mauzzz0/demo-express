@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { UnauthorizedException } from '../errors/UnauthorizedException';
-import { JwtService } from './jwt.service';
+import { UnauthorizedException } from '../errors';
+import { JwtService } from '../jwt/jwt.service';
 
 const JwtGuard = (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers['authorization'];

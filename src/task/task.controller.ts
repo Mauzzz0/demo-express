@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validate } from '../validation/validate';
 import { TaskService } from './task.service';
 import { BaseController } from '../shared/base.controller';
-import JwtGuard from '../jwt/jwt.guard';
+import JwtGuard from '../guards/jwt.guard';
 import { Route } from '../shared/types';
 import { CreateTask, PaginationAndSortingDto } from './task.dto';
 import { IdNumberDto } from '../validation/dto';

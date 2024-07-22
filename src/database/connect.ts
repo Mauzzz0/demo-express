@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import models from './models';
+import { models } from './models';
 import config from '../config';
 import { seeds } from './seeds';
 

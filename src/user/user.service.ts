@@ -1,10 +1,9 @@
-import { UnauthorizedException } from '../errors/UnauthorizedException';
 import { JwtService } from '../jwt/jwt.service';
 import { compareSync, hashSync } from 'bcrypt';
-import { BadRequestException } from '../errors';
-import { UserModel } from '../database/models/user.model';
-import { TokenModel } from '../database/models/token.model';
+import { BadRequestException, UnauthorizedException } from '../errors';
+import { UserModel, TokenModel } from '../database/models';
 import { Login, User } from './user.dto';
+import config from '../config';
 
 export class UserService {
   async profile(id: User['id']) {
@@ -34,8 +33,7 @@ export class UserService {
       throw new BadRequestException('User with this nick already exists');
     }
 
-    const salt = 10;
-    dto.password = hashSync(dto.password, salt);
+    dto.password = hashSync(dto.password, config.SALT);
 
     // TODO: Починить
     //@ts-ignore
