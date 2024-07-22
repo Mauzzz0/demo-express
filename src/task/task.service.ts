@@ -1,4 +1,6 @@
-import { TaskModel } from '../database/models';
+import { Sequelize } from 'sequelize-typescript';
+
+import { TaskModel, TimeModel, UserModel } from '../database/models';
 import { NotFoundException } from '../errors';
 import { CreateTaskDto, PaginationAndSortingDto, Task } from './task.dto';
 
@@ -19,7 +21,35 @@ export class TaskService {
   }
 
   async getOne(id: Task['id']) {
-    const task = await TaskModel.findOne({ where: { id } });
+    const task = await TaskModel.findOne({
+      where: { id },
+      attributes: [
+        'id',
+        'title',
+        'description',
+        'severity',
+        'createdAt',
+        [Sequelize.literal(`sum(time) over ()`), 'spentTime'],
+      ],
+      include: [
+        {
+          model: TimeModel,
+          attributes: ['date', 'time'],
+          order: [['date', 'desc']],
+          include: [{ model: UserModel, attributes: ['id', 'nick'] }],
+        },
+        {
+          model: UserModel,
+          as: 'author',
+          attributes: ['id', 'nick'],
+        },
+        {
+          model: UserModel,
+          as: 'assignee',
+          attributes: ['id', 'nick'],
+        },
+      ],
+    });
 
     if (!task) {
       throw new NotFoundException(`Task with id [${id}] is not exist`);
