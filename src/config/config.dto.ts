@@ -33,10 +33,6 @@ export class ConfigDto {
   @IsString()
   TELEGRAM_TOKEN: string;
 
-  @IsNumber()
-  @Type(() => Number)
-  TELEGRAM_CHAT_ID: number;
-
   @IsString()
   POSTGRESQL_HOST: string;
 
