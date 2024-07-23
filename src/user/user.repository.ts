@@ -16,17 +16,17 @@ if (fs.existsSync(filename)) {
 }
 
 export const userRepository = {
-  findByNick(nick: UserModel['nick']): UserModel | undefined {
+  findByNick(nick: UserModel['nick']): Partial<UserModel> | undefined {
     return storage.find((item) => item.nick === nick);
   },
 
-  findById(id: UserModel['id']): UserModel | undefined {
+  findById(id: UserModel['id']): Partial<UserModel> | undefined {
     return storage.find((item) => item.id === id);
   },
 
   save(dto: LoginDto) {
-    const maxId = storage.map(extractId).sort(sortByDesc)[0] ?? 0;
-
+    // const maxId = storage.map(extractId).sort(sortByDesc)[0] ?? 0;
+    const maxId = 1;
     return storage.push({ id: maxId, ...dto });
   },
 };

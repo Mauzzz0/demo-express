@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { CreateTask, Task } from './task.types';
+import { CreateTaskDto, Task } from './task.dto';
 
 let storage: Task[] = [];
 const filename = 'database.json';
@@ -19,7 +19,7 @@ export const taskRepository = {
     return storage.length;
   },
 
-  create(task: CreateTask): Task {
+  create(task: CreateTaskDto): Task {
     const maxId = storage.map(extractId).sort(sortByDesc)[0] ?? 0;
 
     const taskToSave: Task = {
@@ -50,7 +50,7 @@ export const taskRepository = {
     return lenBefore - storage.length;
   },
 
-  update(id: Task['id'], data: CreateTask): Task {
+  update(id: Task['id'], data: CreateTaskDto): Task {
     const index = storage.findIndex((item) => item.id === id);
 
     if (index == -1) {

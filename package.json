@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "start": "clear && cross-env NODE_ENV=dev ts-node src/main.ts",
     "start:prod": "cross-env NODE_ENV=prod ts-node src/main.ts",
     "start:watch": "nodemon src/main.ts",
