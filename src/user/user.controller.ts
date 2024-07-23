@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { TokenModel, UserRole } from '../database/models';
 import { JwtGuard, RoleGuard } from '../guards';
 import { BaseController } from '../shared/base.controller';
+import { IdNumberDto } from '../shared/id.number.dto';
 import { PaginationDto } from '../shared/pagination.dto';
 import { Route } from '../shared/types';
 import { validate } from '../validation/validate';
@@ -17,22 +18,36 @@ export class UserController extends BaseController {
 
   initRoutes() {
     const middlewares = [JwtGuard];
+    const adminOnly = [...middlewares, RoleGuard(UserRole.admin)];
 
     const routes: Route[] = [
-      { path: '', handler: this.list, middlewares: [...middlewares, RoleGuard(UserRole.admin)] },
+      { path: '', handler: this.list, middlewares: adminOnly },
       { path: '/login', method: 'post', handler: this.login },
-      {
-        path: '/register',
-        method: 'post',
-        handler: this.register,
-        middlewares: [...middlewares, RoleGuard(UserRole.admin)],
-      },
+      { path: '/register', method: 'post', handler: this.register, middlewares: adminOnly },
       { path: '/profile', handler: this.profile, middlewares },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
       { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
+      { path: '/:id/block', method: 'post', handler: this.blockUser, middlewares: adminOnly },
+      { path: '/:id/unblock', method: 'post', handler: this.unblockUser, middlewares: adminOnly },
     ];
 
     this.addRoute(routes);
+  }
+
+  async blockUser(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
+
+    const result = await this.service.blockOrUnblockUser(id, false);
+
+    res.json(result);
+  }
+
+  async unblockUser(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
+
+    const result = await this.service.blockOrUnblockUser(id, true);
+
+    res.json(result);
   }
 
   async list(req: Request, res: Response) {

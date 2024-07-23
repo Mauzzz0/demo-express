@@ -2,14 +2,34 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import config from '../config';
 import { TokenModel, UserModel } from '../database/models';
-import { BadRequestException, ForbiddenException, UnauthorizedException } from '../errors';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '../errors';
 import { JwtService } from '../jwt/jwt.service';
 import { PaginationDto } from '../shared/pagination.dto';
 import { LoginDto } from './user.dto';
 
 export class UserService {
   async profile(id: UserModel['id']) {
-    return UserModel.findByPk(id);
+    const user = await UserModel.findByPk(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
+  }
+
+  async blockOrUnblockUser(id: UserModel['id'], active: UserModel['active']) {
+    const user = await this.profile(id);
+    user.active = active;
+
+    await user.save();
+
+    return user;
   }
 
   async getAll(params: PaginationDto) {
@@ -66,10 +86,7 @@ export class UserService {
 
     const { id } = JwtService.decode(token);
 
-    const user = await UserModel.findOne({ where: { id } });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+    const user = await this.profile(id);
 
     const pair = JwtService.makeTokenPair(user);
 
