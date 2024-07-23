@@ -3,6 +3,16 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize
 import { TaskModel } from './task.model';
 import { UserModel } from './user.model';
 
+type Interval = {
+  years?: number;
+  months?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};
+
 @Table({ tableName: 'times' })
 export class TimeModel extends Model {
   @Column({
@@ -23,7 +33,7 @@ export class TimeModel extends Model {
     type: 'INTERVAL',
     allowNull: false,
   })
-  public time: string;
+  public time: Interval;
 
   @ForeignKey(() => TaskModel)
   @Column({
