@@ -11,7 +11,7 @@ import {
 import { TimeModel } from './time.model';
 import { UserModel } from './user.model';
 
-enum TaskSeverity {
+export enum TaskSeverity {
   low = 'low',
   medium = 'medium',
   high = 'high',

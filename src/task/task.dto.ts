@@ -1,5 +1,6 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
+import { TaskSeverity } from '../database/models';
 import { PaginationDto } from '../shared/pagination.dto';
 
 export class CreateTaskDto {
@@ -8,6 +9,10 @@ export class CreateTaskDto {
 
   @IsString()
   description: string;
+
+  @IsEnum(TaskSeverity)
+  @IsOptional()
+  severity?: TaskSeverity;
 
   @IsNumber()
   assigneeId: number;
