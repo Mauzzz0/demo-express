@@ -6,7 +6,7 @@ import { BaseController } from '../shared/base.controller';
 import { Route } from '../shared/types';
 import { IdNumberDto } from '../validation/dto';
 import { validate } from '../validation/validate';
-import { CreateTaskDto, PaginationAndSortingDto } from './task.dto';
+import { CreateTaskDto, GetTaskListDto } from './task.dto';
 import { TaskService } from './task.service';
 
 export class TaskController extends BaseController {
@@ -43,7 +43,7 @@ export class TaskController extends BaseController {
   }
 
   async getAll(req: Request, res: Response) {
-    const payload = validate(PaginationAndSortingDto, req.query);
+    const payload = validate(GetTaskListDto, req.query);
 
     const result = await this.service.getAll(payload);
 

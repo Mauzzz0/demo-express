@@ -1,10 +1,15 @@
 import jwt from 'jsonwebtoken';
 
 import config from '../config';
+import { UserModel } from '../database/models';
 import { BadRequestException } from '../errors';
 import { TokenPair } from './jwt.types';
 
-const makeTokenPair = (payload: Record<string, any>): TokenPair => {
+const makeTokenPair = (user: UserModel): TokenPair => {
+  const payload = {
+    id: user.id,
+  };
+
   const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
     expiresIn: '1h',
   });

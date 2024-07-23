@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { TokenModel, UserRole } from '../database/models';
 import { JwtGuard, RoleGuard } from '../guards';
 import { BaseController } from '../shared/base.controller';
+import { PaginationDto } from '../shared/pagination.dto';
 import { Route } from '../shared/types';
 import { validate } from '../validation/validate';
 import { LoginDto, RegisterDto, TokenDto } from './user.dto';
@@ -18,6 +19,7 @@ export class UserController extends BaseController {
     const middlewares = [JwtGuard];
 
     const routes: Route[] = [
+      { path: '', handler: this.list, middlewares: [...middlewares, RoleGuard(UserRole.admin)] },
       { path: '/login', method: 'post', handler: this.login },
       {
         path: '/register',
@@ -31,6 +33,14 @@ export class UserController extends BaseController {
     ];
 
     this.addRoute(routes);
+  }
+
+  async list(req: Request, res: Response) {
+    const payload = validate(PaginationDto, req.query);
+
+    const result = await this.service.getAll(payload);
+
+    res.json(result);
   }
 
   async profile(req: Request, res: Response) {

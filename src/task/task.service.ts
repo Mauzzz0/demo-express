@@ -2,14 +2,14 @@ import { Sequelize } from 'sequelize-typescript';
 
 import { TaskModel, TimeModel, UserModel } from '../database/models';
 import { NotFoundException } from '../errors';
-import { CreateTaskDto, PaginationAndSortingDto, Task } from './task.dto';
+import { CreateTaskDto, GetTaskListDto, Task } from './task.dto';
 
 export class TaskService {
   async create(authorId: number, task: CreateTaskDto) {
     return TaskModel.create({ ...task, authorId });
   }
 
-  async getAll(params: PaginationAndSortingDto) {
+  async getAll(params: GetTaskListDto) {
     const { limit, offset, sort } = params;
     const { rows, count } = await TaskModel.findAndCountAll({
       limit,

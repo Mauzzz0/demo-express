@@ -1,4 +1,6 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+
+import { PaginationDto } from '../shared/pagination.dto';
 
 export class CreateTaskDto {
   @IsString()
@@ -18,13 +20,7 @@ export enum TaskSortEnum {
   description = 'description',
 }
 
-export class PaginationAndSortingDto {
-  @IsNumber()
-  limit: number = 10;
-
-  @IsNumber()
-  offset: number = 0;
-
+export class GetTaskListDto extends PaginationDto {
   @IsEnum(TaskSortEnum)
   sort: TaskSortEnum = TaskSortEnum.id;
 }

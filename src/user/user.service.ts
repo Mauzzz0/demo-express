@@ -4,11 +4,19 @@ import config from '../config';
 import { TokenModel, UserModel } from '../database/models';
 import { BadRequestException, ForbiddenException, UnauthorizedException } from '../errors';
 import { JwtService } from '../jwt/jwt.service';
+import { PaginationDto } from '../shared/pagination.dto';
 import { LoginDto } from './user.dto';
 
 export class UserService {
   async profile(id: UserModel['id']) {
     return UserModel.findByPk(id);
+  }
+
+  async getAll(params: PaginationDto) {
+    const { limit, offset } = params;
+    const { rows, count } = await UserModel.findAndCountAll({ limit, offset });
+
+    return { total: count, limit, offset, data: rows };
   }
 
   async login(dto: LoginDto) {
@@ -22,7 +30,7 @@ export class UserService {
       throw new ForbiddenException();
     }
 
-    const tokens = JwtService.makeTokenPair({ id: user.id });
+    const tokens = JwtService.makeTokenPair(user);
 
     await TokenModel.create({ token: tokens.refreshToken, userId: user.id });
 
@@ -58,7 +66,12 @@ export class UserService {
 
     const { id } = JwtService.decode(token);
 
-    const pair = JwtService.makeTokenPair({ id });
+    const user = await UserModel.findOne({ where: { id } });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const pair = JwtService.makeTokenPair(user);
 
     await TokenModel.destroy({ where: { token } });
     await TokenModel.create({ token: pair.refreshToken });

@@ -32,8 +32,8 @@ export const JwtGuard = async (req: Request, res: Response, next: NextFunction) 
 
   res.locals = {
     user: {
-      id: payload.id,
-      role: payload.role,
+      id: user.id,
+      role: user.role,
     },
   };
 
