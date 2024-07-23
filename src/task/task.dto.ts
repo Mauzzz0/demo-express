@@ -1,4 +1,4 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { PaginationDto } from '../shared/pagination.dto';
 
@@ -8,10 +8,9 @@ export class CreateTaskDto {
 
   @IsString()
   description: string;
-}
 
-export class Task extends CreateTaskDto {
-  id: number;
+  @IsNumber()
+  assigneeId: number;
 }
 
 export enum TaskSortEnum {

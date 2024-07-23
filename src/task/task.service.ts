@@ -2,11 +2,16 @@ import { Sequelize } from 'sequelize-typescript';
 
 import { TaskModel, TimeModel, UserModel } from '../database/models';
 import { NotFoundException } from '../errors';
-import { CreateTaskDto, GetTaskListDto, Task } from './task.dto';
+import { CreateTaskDto, GetTaskListDto } from './task.dto';
 
 export class TaskService {
-  async create(authorId: number, task: CreateTaskDto) {
-    return TaskModel.create({ ...task, authorId });
+  async create(authorId: number, dto: CreateTaskDto) {
+    const assignee = await UserModel.findOne({ where: { id: dto.assigneeId } });
+    if (!assignee) {
+      throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
+    }
+
+    return TaskModel.create({ ...dto, authorId });
   }
 
   async getAll(params: GetTaskListDto) {
@@ -20,7 +25,7 @@ export class TaskService {
     return { total: count, limit, offset, data: rows };
   }
 
-  async getOne(id: Task['id']) {
+  async getOne(id: TaskModel['id']) {
     const task = await TaskModel.findOne({
       where: { id },
       attributes: [
@@ -58,15 +63,19 @@ export class TaskService {
     return task;
   }
 
-  async deleteOne(id: Task['id']) {
+  async deleteOne(id: TaskModel['id']) {
     await this.getOne(id);
 
     return TaskModel.destroy({ where: { id } });
   }
 
-  async update(id: Task['id'], data: CreateTaskDto) {
+  async update(id: TaskModel['id'], dto: CreateTaskDto) {
     await this.getOne(id);
+    const assignee = await UserModel.findOne({ where: { id: dto.assigneeId } });
+    if (!assignee) {
+      throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
+    }
 
-    return TaskModel.update(data, { where: { id }, returning: true });
+    return TaskModel.update(dto, { where: { id }, returning: true });
   }
 }

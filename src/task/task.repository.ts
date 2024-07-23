@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 
-import { CreateTaskDto, Task } from './task.dto';
+import { TaskModel } from '../database/models';
+import { CreateTaskDto } from './task.dto';
 
-let storage: Task[] = [];
+let storage: Partial<TaskModel>[] = [];
 const filename = 'database.json';
 const saveDatabaseToFile = () => fs.writeFileSync(filename, JSON.stringify(storage));
 const extractId = ({ id }: { id: number }) => id;
@@ -33,7 +34,7 @@ export const taskRepository = {
     return taskToSave;
   },
 
-  findOne(id: Task['id']): Task | undefined {
+  findOne(id: TaskModel['id']): Task | undefined {
     return storage.find((item) => item.id === id);
   },
 
@@ -41,7 +42,7 @@ export const taskRepository = {
     return storage.slice(offset, offset + limit).sort((a, b) => (a[key] > b[key] ? 1 : -1));
   },
 
-  deleteOne(id: Task['id']): number {
+  deleteOne(id: TaskModel['id']): number {
     const lenBefore = storage.length;
 
     storage = storage.filter((item) => item.id !== id);
@@ -50,7 +51,7 @@ export const taskRepository = {
     return lenBefore - storage.length;
   },
 
-  update(id: Task['id'], data: CreateTaskDto): Task {
+  update(id: TaskModel['id'], data: CreateTaskDto): Task {
     const index = storage.findIndex((item) => item.id === id);
 
     if (index == -1) {
