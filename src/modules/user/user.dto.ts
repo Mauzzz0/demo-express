@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { UserRole } from '../database/models';
+import { UserRole } from '../../database/models';
 
 export class LoginDto {
   @IsString()
