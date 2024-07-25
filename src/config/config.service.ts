@@ -20,7 +20,17 @@ export class ConfigService {
     this.config = validate(ConfigDto, result.parsed);
   }
 
-  get env() {
+  get env(): ConfigDto {
     return this.config;
+  }
+
+  get redisConnectionString(): string {
+    const user = this.config.REDIS_USERNAME;
+    const password = this.config.REDIS_PASSWORD;
+    const host = this.config.REDIS_HOST;
+    const port = this.config.REDIS_PORT;
+    const db = this.config.REDIS_DATABASE;
+
+    return `redis://${user}:${password}@${host}:${port}/${db}`;
   }
 }

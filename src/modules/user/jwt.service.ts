@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
 import { BadRequestException } from '../../errors';
-import { Components } from '../../shared/di.types';
+import { Components } from '../../shared/inversify.types';
 import { TokenPair } from './jwt.types';
 
 @injectable()
@@ -15,9 +15,7 @@ export class JwtService {
   ) {}
 
   makeTokenPair(user: UserModel): TokenPair {
-    const payload = {
-      id: user.id,
-    };
+    const payload = { id: user.id };
 
     const accessToken = jwt.sign(payload, this.config.env.JWT_ACCESS_SECRET, {
       expiresIn: '1h',
