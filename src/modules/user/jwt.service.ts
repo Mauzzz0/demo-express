@@ -15,9 +15,7 @@ export class JwtService {
   ) {}
 
   makeTokenPair(user: UserModel): TokenPair {
-    const payload = {
-      id: user.id,
-    };
+    const payload = { id: user.id };
 
     const accessToken = jwt.sign(payload, this.config.env.JWT_ACCESS_SECRET, {
       expiresIn: '1h',

@@ -2,7 +2,8 @@ import { compareSync, hashSync } from 'bcrypt';
 import { inject, injectable } from 'inversify';
 
 import { ConfigService } from '../../config/config.service';
-import { TokenModel, UserModel } from '../../database/models';
+import { UserModel } from '../../database/models';
+import { RedisService } from '../../database/redis/redis.service';
 import {
   BadRequestException,
   ForbiddenException,
@@ -16,10 +17,22 @@ import { LoginDto } from './user.dto';
 
 @injectable()
 export class UserService {
+  private readonly redisRefreshTokenKey = (userId: number) => `refresh:user-${userId}`;
+
   constructor(
     @inject(Components.JwtService) private readonly jwtService: JwtService,
     @inject(Components.ConfigService) private readonly config: ConfigService,
+    @inject(Components.Redis) private readonly redis: RedisService,
   ) {}
+
+  private async setNewRefreshToken(userId: number, token: string) {
+    const secondsInDay = 60 * 60 * 24;
+    return this.redis.set(
+      this.redisRefreshTokenKey(userId),
+      { userId, token },
+      { EX: secondsInDay },
+    );
+  }
 
   async profile(id: UserModel['id']) {
     const user = await UserModel.findByPk(id);
@@ -59,8 +72,7 @@ export class UserService {
     }
 
     const tokens = this.jwtService.makeTokenPair(user);
-
-    await TokenModel.create({ token: tokens.refreshToken, userId: user.id });
+    await this.setNewRefreshToken(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -83,12 +95,17 @@ export class UserService {
     return true;
   }
 
-  async refresh(token: string) {
-    const existsToken = await TokenModel.findOne({ where: { token } });
+  async logout(userId: number) {
+    await this.redis.delete(this.redisRefreshTokenKey(userId));
 
+    return true;
+  }
+
+  async refresh(userId: number, token: string) {
+    const refreshTokenData = await this.redis.get(this.redisRefreshTokenKey(userId));
     const valid = this.jwtService.verify(token, 'refresh');
 
-    if (!valid || !existsToken) {
+    if (!valid || !refreshTokenData || token != refreshTokenData.token) {
       throw new UnauthorizedException();
     }
 
@@ -98,8 +115,8 @@ export class UserService {
 
     const pair = this.jwtService.makeTokenPair(user);
 
-    await TokenModel.destroy({ where: { token } });
-    await TokenModel.create({ token: pair.refreshToken });
+    await this.redis.delete(this.redisRefreshTokenKey(userId));
+    await this.setNewRefreshToken(user.id, pair.refreshToken);
 
     return pair;
   }

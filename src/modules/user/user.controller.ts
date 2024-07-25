@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
-import { TokenModel, UserRole } from '../../database/models';
+import { UserRole } from '../../database/models';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id.number.dto';
@@ -85,15 +85,17 @@ export class UserController extends BaseController {
   }
 
   async logout(req: Request, res: Response) {
-    const { token } = validate(TokenDto, req.body);
-    await TokenModel.destroy({ where: { token } });
+    const { id } = res.locals.user;
+    await this.service.logout(id);
 
     res.json({ result: true });
   }
 
   async refresh(req: Request, res: Response) {
     const { token } = validate(TokenDto, req.body);
-    const tokens = await this.service.refresh(token);
+    const { id } = res.locals.user;
+
+    const tokens = await this.service.refresh(id, token);
 
     res.json(tokens);
   }
