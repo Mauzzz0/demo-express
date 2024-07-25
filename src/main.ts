@@ -3,21 +3,17 @@ import 'reflect-metadata';
 
 import { Container } from 'inversify';
 
-import { createApplicationModule } from './modules/application/application.module';
+import { createAppModule } from './modules/app/app.module';
 import { createTaskModule } from './modules/task/task.module';
 import { createUserModule } from './modules/user/user.module';
 import { RestApplication } from './rest.application';
 import { Components } from './shared/di.types';
 
-const bootstrap = () => {
-  const appContainer = Container.merge(
-    createApplicationModule(),
-    createUserModule(),
-    createTaskModule(),
-  );
+const bootstrap = async () => {
+  const app = Container.merge(createAppModule(), createUserModule(), createTaskModule());
 
-  const server = appContainer.get<RestApplication>(Components.Application);
-  server.init();
+  const server = app.get<RestApplication>(Components.Application);
+  await server.init();
 };
 
 bootstrap();

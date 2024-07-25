@@ -9,7 +9,6 @@ export const RoleGuard =
       user: { role },
     } = res.locals;
 
-    // FYI: Так как у нас всего 2 роли, то остальные проверки можно опустить
     if (role !== UserRole.admin && requiredRole === UserRole.admin) {
       throw new ForbiddenException("You don't have permission");
     }
