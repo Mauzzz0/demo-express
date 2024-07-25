@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
 import { BadRequestException } from '../../errors';
-import { Components } from '../../shared/di.types';
+import { Components } from '../../shared/inversify.types';
 import { TokenPair } from './jwt.types';
 
 @injectable()

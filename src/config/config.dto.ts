@@ -48,4 +48,21 @@ export class ConfigDto {
   @IsNumber()
   @Type(() => Number)
   POSTGRESQL_PORT: number;
+
+  @IsString()
+  REDIS_HOST: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  REDIS_DATABASE: number;
+
+  @IsString()
+  REDIS_USERNAME: string;
+
+  @IsString()
+  REDIS_PASSWORD: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  REDIS_PORT: number;
 }

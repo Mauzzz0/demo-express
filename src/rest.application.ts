@@ -10,7 +10,7 @@ import { seeds } from './database/seeds';
 import { ErrorHandler, LogMiddleware, SessionMiddleware, ViewsMiddleware } from './middlewares';
 import { TaskController } from './modules/task/task.controller';
 import { UserController } from './modules/user/user.controller';
-import { Components } from './shared/di.types';
+import { Components } from './shared/inversify.types';
 import { setupSwagger } from './swagger/setupSwagger';
 
 @injectable()

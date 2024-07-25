@@ -9,7 +9,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '../../errors';
-import { Components } from '../../shared/di.types';
+import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { JwtService } from './jwt.service';
 import { LoginDto } from './user.dto';

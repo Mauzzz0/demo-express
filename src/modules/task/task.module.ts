@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 
-import { Components } from '../../shared/di.types';
+import { Components } from '../../shared/inversify.types';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 
