@@ -1,8 +1,7 @@
-import { taskRepository } from '../task/task.repository';
 import { validate } from '../validation/validate';
 import { GenerateCommandOptions } from './dto';
 import { words } from './mock.values';
-import { getRandomItems, upperFirst } from './utils';
+import { getRandomItems } from './utils';
 
 const params = {
   count: process.argv[2],
@@ -13,8 +12,8 @@ for (let i = 0; i < count; i++) {
   const title = getRandomItems(words, 3).join(' ');
   const description = getRandomItems(words, 10).join(' ');
 
-  taskRepository.create({
-    title: upperFirst(title),
-    description: upperFirst(description),
-  });
+  // taskRepository.create({
+  //   title: upperFirst(title),
+  //   description: upperFirst(description),
+  // });
 }

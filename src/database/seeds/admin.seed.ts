@@ -1,15 +1,15 @@
 import { hashSync } from 'bcrypt';
 
-import config from '../../config';
 import { Environment } from '../../config/config.dto';
+import { ConfigService } from '../../config/config.service';
 import { UserModel, UserRole } from '../models';
 
-export const adminSeed = async () => {
-  if (config.ENV === Environment.dev) {
+export const adminSeed = async (config: ConfigService) => {
+  if (config.env.ENV === Environment.dev) {
     const admin = {
-      nick: config.ADMIN_NICK,
+      nick: config.env.ADMIN_NICK,
       role: UserRole.admin,
-      password: hashSync(config.ADMIN_PASSWORD, config.SALT),
+      password: hashSync(config.env.ADMIN_PASSWORD, config.env.SALT),
     };
 
     const exists = await UserModel.findOne({ where: { nick: admin.nick } });

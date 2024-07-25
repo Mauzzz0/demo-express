@@ -1,11 +1,13 @@
 import { Router } from 'express';
+import { injectable } from 'inversify';
 
 import { Route } from './types';
 
+@injectable()
 export abstract class BaseController {
   public readonly router: Router;
 
-  protected constructor() {
+  constructor() {
     this.router = Router();
   }
 

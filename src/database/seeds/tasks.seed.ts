@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 
-import config from '../../config';
 import { Environment } from '../../config/config.dto';
+import { ConfigService } from '../../config/config.service';
 import { TaskModel, TimeModel, UserModel } from '../models';
 
-export const tasksSeed = async () => {
-  if (config.ENV === Environment.dev) {
-    const admin = await UserModel.findOne({ where: { nick: config.ADMIN_NICK } });
+export const tasksSeed = async (config: ConfigService) => {
+  if (config.env.ENV === Environment.dev) {
+    const admin = await UserModel.findOne({ where: { nick: config.env.ADMIN_NICK } });
 
     if (admin) {
       const tasks: Partial<TaskModel>[] = [

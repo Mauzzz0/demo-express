@@ -1,22 +1,31 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 
-import { UserRole } from '../database/models';
-import { JwtGuard, RoleGuard } from '../guards';
-import { BaseController } from '../shared/base.controller';
-import { IdNumberDto } from '../shared/id.number.dto';
-import { Route } from '../shared/types';
-import { validate } from '../validation/validate';
+import { UserRole } from '../../database/models';
+import { JwtGuard, RoleGuard } from '../../guards';
+import { BaseController } from '../../shared/base.controller';
+import { Components } from '../../shared/di.types';
+import { IdNumberDto } from '../../shared/id.number.dto';
+import { Route } from '../../shared/types';
+import { validate } from '../../validation/validate';
+import { JwtService } from '../user/jwt.service';
 import { CreateTaskDto, GetTaskListDto } from './task.dto';
 import { TaskService } from './task.service';
 
+@injectable()
 export class TaskController extends BaseController {
-  constructor(private readonly service: TaskService) {
+  constructor(
+    @inject(Components.TaskService)
+    private readonly service: TaskService,
+    @inject(Components.JwtService)
+    private readonly jwtService: JwtService,
+  ) {
     super();
     this.initRoutes();
   }
 
   initRoutes() {
-    const middlewares = [JwtGuard];
+    const middlewares = [JwtGuard(this.jwtService)];
 
     const routes: Route[] = [
       { path: '/', method: 'post', handler: this.create, middlewares },

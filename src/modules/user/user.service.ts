@@ -1,18 +1,26 @@
 import { compareSync, hashSync } from 'bcrypt';
+import { inject, injectable } from 'inversify';
 
-import config from '../config';
-import { TokenModel, UserModel } from '../database/models';
+import { ConfigService } from '../../config/config.service';
+import { TokenModel, UserModel } from '../../database/models';
 import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
-} from '../errors';
-import { JwtService } from '../jwt/jwt.service';
-import { PaginationDto } from '../shared/pagination.dto';
+} from '../../errors';
+import { Components } from '../../shared/di.types';
+import { PaginationDto } from '../../shared/pagination.dto';
+import { JwtService } from './jwt.service';
 import { LoginDto } from './user.dto';
 
+@injectable()
 export class UserService {
+  constructor(
+    @inject(Components.JwtService) private readonly jwtService: JwtService,
+    @inject(Components.ConfigService) private readonly config: ConfigService,
+  ) {}
+
   async profile(id: UserModel['id']) {
     const user = await UserModel.findByPk(id);
 
@@ -50,7 +58,7 @@ export class UserService {
       throw new ForbiddenException();
     }
 
-    const tokens = JwtService.makeTokenPair(user);
+    const tokens = this.jwtService.makeTokenPair(user);
 
     await TokenModel.create({ token: tokens.refreshToken, userId: user.id });
 
@@ -66,7 +74,7 @@ export class UserService {
       throw new BadRequestException('User with this nick already exists');
     }
 
-    dto.password = hashSync(dto.password, config.SALT);
+    dto.password = hashSync(dto.password, this.config.env.SALT);
 
     // TODO: Пофиксить
     // @ts-ignore
@@ -78,17 +86,17 @@ export class UserService {
   async refresh(token: string) {
     const existsToken = await TokenModel.findOne({ where: { token } });
 
-    const valid = JwtService.verify(token, 'refresh');
+    const valid = this.jwtService.verify(token, 'refresh');
 
     if (!valid || !existsToken) {
       throw new UnauthorizedException();
     }
 
-    const { id } = JwtService.decode(token);
+    const { id } = this.jwtService.decode(token);
 
     const user = await this.profile(id);
 
-    const pair = JwtService.makeTokenPair(user);
+    const pair = this.jwtService.makeTokenPair(user);
 
     await TokenModel.destroy({ where: { token } });
     await TokenModel.create({ token: pair.refreshToken });

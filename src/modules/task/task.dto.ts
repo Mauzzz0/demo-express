@@ -1,7 +1,7 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-import { TaskSeverity } from '../database/models';
-import { PaginationDto } from '../shared/pagination.dto';
+import { TaskSeverity } from '../../database/models';
+import { PaginationDto } from '../../shared/pagination.dto';
 
 export class CreateTaskDto {
   @IsString()

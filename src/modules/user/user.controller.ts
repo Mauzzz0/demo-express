@@ -1,23 +1,32 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 
-import { TokenModel, UserRole } from '../database/models';
-import { JwtGuard, RoleGuard } from '../guards';
-import { BaseController } from '../shared/base.controller';
-import { IdNumberDto } from '../shared/id.number.dto';
-import { PaginationDto } from '../shared/pagination.dto';
-import { Route } from '../shared/types';
-import { validate } from '../validation/validate';
+import { TokenModel, UserRole } from '../../database/models';
+import { JwtGuard, RoleGuard } from '../../guards';
+import { BaseController } from '../../shared/base.controller';
+import { Components } from '../../shared/di.types';
+import { IdNumberDto } from '../../shared/id.number.dto';
+import { PaginationDto } from '../../shared/pagination.dto';
+import { Route } from '../../shared/types';
+import { validate } from '../../validation/validate';
+import { JwtService } from './jwt.service';
 import { LoginDto, RegisterDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
 
+@injectable()
 export class UserController extends BaseController {
-  constructor(private readonly service: UserService) {
+  constructor(
+    @inject(Components.UserService)
+    private readonly service: UserService,
+    @inject(Components.JwtService)
+    private readonly jwtService: JwtService,
+  ) {
     super();
     this.initRoutes();
   }
 
   initRoutes() {
-    const middlewares = [JwtGuard];
+    const middlewares = [JwtGuard(this.jwtService)];
     const adminOnly = [...middlewares, RoleGuard(UserRole.admin)];
 
     const routes: Route[] = [
