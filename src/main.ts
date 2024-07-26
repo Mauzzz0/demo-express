@@ -5,10 +5,10 @@ import { Container } from 'inversify';
 
 import { createRedisModule } from './database/redis/redis.module';
 import { RedisService } from './database/redis/redis.service';
+import { App } from './modules/app/app';
 import { createAppModule } from './modules/app/app.module';
 import { createTaskModule } from './modules/task/task.module';
 import { createUserModule } from './modules/user/user.module';
-import { RestApplication } from './rest.application';
 import { Components } from './shared/inversify.types';
 
 const bootstrap = async () => {
@@ -21,9 +21,8 @@ const bootstrap = async () => {
 
   const redis = app.get<RedisService>(Components.Redis);
   await redis.connect();
-  await redis.connect();
 
-  const server = app.get<RestApplication>(Components.Application);
+  const server = app.get<App>(Components.Application);
   await server.init();
 };
 

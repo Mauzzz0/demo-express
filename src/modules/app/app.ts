@@ -3,18 +3,18 @@ import express, { Express } from 'express';
 import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
 
-import { logRoutes } from './bootstrap/logRoutes';
-import { ConfigService } from './config/config.service';
-import { models } from './database/models';
-import { seeds } from './database/seeds';
-import { ErrorHandler, LogMiddleware, SessionMiddleware, ViewsMiddleware } from './middlewares';
-import { TaskController } from './modules/task/task.controller';
-import { UserController } from './modules/user/user.controller';
-import { Components } from './shared/inversify.types';
-import { setupSwagger } from './swagger/setupSwagger';
+import { logRoutes } from '../../bootstrap/logRoutes';
+import { ConfigService } from '../../config/config.service';
+import { models } from '../../database/models';
+import { seeds } from '../../database/seeds';
+import { ErrorHandler, LogMiddleware, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
+import { Components } from '../../shared/inversify.types';
+import { setupSwagger } from '../../swagger/setupSwagger';
+import { TaskController } from '../task/task.controller';
+import { UserController } from '../user/user.controller';
 
 @injectable()
-export class RestApplication {
+export class App {
   private readonly server: Express;
 
   constructor(
