@@ -8,6 +8,8 @@ import { RedisService } from './database/redis/redis.service';
 import { App } from './modules/app/app';
 import { createAppModule } from './modules/app/app.module';
 import { createTaskModule } from './modules/task/task.module';
+import { createTelegramModule } from './modules/telegram/telegram.module';
+import { TelegramService } from './modules/telegram/telegram.service';
 import { createUserModule } from './modules/user/user.module';
 import { Components } from './shared/inversify.types';
 
@@ -17,10 +19,14 @@ const bootstrap = async () => {
     createUserModule(),
     createTaskModule(),
     createRedisModule(),
+    createTelegramModule(),
   );
 
   const redis = app.get<RedisService>(Components.Redis);
   await redis.connect();
+
+  const telegram = app.get<TelegramService>(Components.Telegram);
+  await telegram.start();
 
   const server = app.get<App>(Components.Application);
   await server.init();

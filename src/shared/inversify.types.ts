@@ -1,6 +1,7 @@
 export enum Components {
   Application = 'Application',
   Redis = 'Redis',
+  Telegram = 'Telegram',
 
   ConfigService = 'ConfigService',
   JwtService = 'JwtService',
