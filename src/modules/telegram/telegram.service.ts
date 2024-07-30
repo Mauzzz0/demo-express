@@ -6,7 +6,7 @@ import { Components } from '../../shared/inversify.types';
 
 @injectable()
 export class TelegramService {
-  private readonly bot: Telegraf;
+  readonly bot: Telegraf;
 
   constructor(
     @inject(Components.ConfigService)

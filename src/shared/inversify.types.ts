@@ -3,6 +3,7 @@ export enum Components {
   Redis = 'Redis',
   Telegram = 'Telegram',
 
+  CronService = 'CronService',
   ConfigService = 'ConfigService',
   JwtService = 'JwtService',
 
