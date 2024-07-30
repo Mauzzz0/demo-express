@@ -23,6 +23,7 @@ module.exports = {
     'unused-imports/no-unused-imports': 'warn',
     'import/no-duplicates': 'warn',
     'no-eval': 'error',
+    eqeqeq: 'error',
     semi: [1, 'always'],
     'simple-import-sort/imports': "warn"
   },
