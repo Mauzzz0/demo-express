@@ -34,6 +34,7 @@ export class UserController extends BaseController {
       { path: '/login', method: 'post', handler: this.login },
       { path: '/register', method: 'post', handler: this.register, middlewares: adminOnly },
       { path: '/profile', handler: this.profile, middlewares },
+      { path: '/profile/:id', handler: this.profileAdmin, middlewares: adminOnly },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
       { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
       { path: '/:id/block', method: 'post', handler: this.blockUser, middlewares: adminOnly },
@@ -63,6 +64,13 @@ export class UserController extends BaseController {
     const payload = validate(PaginationDto, req.query);
 
     const result = await this.service.getAll(payload);
+
+    res.json(result);
+  }
+
+  async profileAdmin(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
+    const result = await this.service.profile(id);
 
     res.json(result);
   }
