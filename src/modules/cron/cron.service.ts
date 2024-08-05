@@ -18,6 +18,6 @@ export class CronService {
   }
 
   private async sendHi() {
-    await this.telegramService.bot.telegram.sendMessage(834333336, 'Это ежеминутный спам!');
+    // await this.telegramService.bot.telegram.sendMessage(834333336, 'Это ежеминутный спам!');
   }
 }

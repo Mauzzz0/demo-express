@@ -14,9 +14,28 @@ export class RegisterDto extends LoginDto {
   @IsEnum(UserRole)
   @IsOptional()
   role?: UserRole;
+
+  @IsString()
+  email: string;
 }
 
 export class TokenDto {
   @IsString()
   token: string;
+}
+
+export class RestorePasswordDto {
+  @IsString()
+  email: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  email: string;
+
+  @IsString()
+  restoreKey: string;
+
+  @IsString()
+  password: string;
 }

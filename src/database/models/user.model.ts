@@ -17,8 +17,11 @@ export class UserModel extends Model {
   })
   public id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
   public nick: string;
+
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  public email: string;
 
   @Column({
     type: DataType.ENUM,

@@ -31,7 +31,16 @@ export class ConfigDto {
   ADMIN_PASSWORD: string;
 
   @IsString()
+  ADMIN_EMAIL: string;
+
+  @IsString()
   TELEGRAM_TOKEN: string;
+
+  @IsString()
+  SMTP_USER: string;
+
+  @IsString()
+  SMTP_PASS: string;
 
   @IsString()
   POSTGRESQL_HOST: string;
