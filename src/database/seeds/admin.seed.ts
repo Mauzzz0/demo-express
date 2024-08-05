@@ -8,6 +8,7 @@ export const adminSeed = async (config: ConfigService) => {
   if (config.env.ENV === Environment.dev) {
     const admin = {
       nick: config.env.ADMIN_NICK,
+      email: config.env.ADMIN_EMAIL,
       role: UserRole.admin,
       password: hashSync(config.env.ADMIN_PASSWORD, config.env.SALT),
     };

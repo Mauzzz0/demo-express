@@ -6,6 +6,7 @@ export enum Components {
   CronService = 'CronService',
   ConfigService = 'ConfigService',
   JwtService = 'JwtService',
+  MailService = 'MailService',
 
   UserController = 'UserController',
   UserService = 'UserService',

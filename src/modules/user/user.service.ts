@@ -1,5 +1,6 @@
 import { compareSync, hashSync } from 'bcrypt';
 import { inject, injectable } from 'inversify';
+import { v4 } from 'uuid';
 
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
@@ -12,16 +13,19 @@ import {
 } from '../../errors';
 import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
+import { MailService } from '../mail/mail.service';
 import { JwtService } from './jwt.service';
-import { LoginDto } from './user.dto';
+import { ChangePasswordDto, LoginDto } from './user.dto';
 
 @injectable()
 export class UserService {
   private readonly redisRefreshTokenKey = (userId: number) => `refresh:user-${userId}`;
+  private readonly redisRestorePasswordKey = (userId: number) => `restore:user-${userId}`;
 
   constructor(
     @inject(Components.JwtService) private readonly jwtService: JwtService,
     @inject(Components.ConfigService) private readonly config: ConfigService,
+    @inject(Components.MailService) private readonly mail: MailService,
     @inject(Components.Redis) private readonly redis: RedisService,
   ) {}
 
@@ -32,6 +36,41 @@ export class UserService {
       { userId, token },
       { EX: secondsInDay },
     );
+  }
+
+  async passwordRestore(email: UserModel['email']) {
+    const user = await UserModel.findOne({ where: { email } });
+    if (!user) {
+      return true;
+    }
+
+    const restoreKey = v4();
+
+    await this.redis.set(this.redisRestorePasswordKey(user.id), { restoreKey }, { EX: 3600 });
+    await this.mail.sendRestoreMessage(user.email, restoreKey);
+
+    return true;
+  }
+
+  async passwordChange(dto: ChangePasswordDto) {
+    const { email, restoreKey, password } = dto;
+
+    const user = await UserModel.findOne({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const value = await this.redis.get(this.redisRestorePasswordKey(user.id));
+    if (!value || value.restoreKey !== restoreKey) {
+      throw new UnauthorizedException();
+    }
+
+    user.password = hashSync(dto.password, this.config.env.SALT);
+    await user.save();
+
+    await this.redis.delete(this.redisRestorePasswordKey(user.id));
+
+    return true;
   }
 
   async profile(id: UserModel['id']) {

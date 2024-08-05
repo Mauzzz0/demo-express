@@ -10,7 +10,7 @@ import { PaginationDto } from '../../shared/pagination.dto';
 import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
 import { JwtService } from './jwt.service';
-import { LoginDto, RegisterDto, TokenDto } from './user.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto, RestorePasswordDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
 
 @injectable()
@@ -33,6 +33,8 @@ export class UserController extends BaseController {
       { path: '', handler: this.list, middlewares: adminOnly },
       { path: '/login', method: 'post', handler: this.login },
       { path: '/register', method: 'post', handler: this.register, middlewares: adminOnly },
+      { path: '/password/restore', method: 'post', handler: this.passwordRestore },
+      { path: '/password/change', method: 'put', handler: this.passwordChange },
       { path: '/profile', handler: this.profile, middlewares },
       { path: '/profile/:id', handler: this.profileAdmin, middlewares: adminOnly },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
@@ -42,6 +44,22 @@ export class UserController extends BaseController {
     ];
 
     this.addRoute(routes);
+  }
+
+  async passwordRestore(req: Request, res: Response) {
+    const { email } = validate(RestorePasswordDto, req.body);
+
+    const result = await this.service.passwordRestore(email);
+
+    res.json(result);
+  }
+
+  async passwordChange(req: Request, res: Response) {
+    const dto = validate(ChangePasswordDto, req.body);
+
+    const result = await this.service.passwordChange(dto);
+
+    res.json(result);
   }
 
   async blockUser(req: Request, res: Response) {

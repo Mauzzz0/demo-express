@@ -9,6 +9,7 @@ import { App } from './modules/app/app';
 import { createAppModule } from './modules/app/app.module';
 import { createCronModule } from './modules/cron/cron.module';
 import { CronService } from './modules/cron/cron.service';
+import { createMailModule } from './modules/mail/mail.module';
 import { createTaskModule } from './modules/task/task.module';
 import { createTelegramModule } from './modules/telegram/telegram.module';
 import { TelegramService } from './modules/telegram/telegram.service';
@@ -23,6 +24,7 @@ const bootstrap = async () => {
     createRedisModule(),
     createTelegramModule(),
     createCronModule(),
+    createMailModule(),
   );
 
   const redis = app.get<RedisService>(Components.Redis);
