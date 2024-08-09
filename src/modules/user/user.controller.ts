@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
 import { UserRole } from '../../database/models';
+import { redisTempMailKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
 import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
@@ -18,8 +19,6 @@ import { UserService } from './user.service';
 
 @injectable()
 export class UserController extends BaseController {
-  private readonly tempMailKey = (mail: string) => `temp-mail:${mail}`;
-
   constructor(
     @inject(Components.UserService)
     private readonly service: UserService,
@@ -44,6 +43,7 @@ export class UserController extends BaseController {
       { path: '/password/restore', method: 'post', handler: this.passwordRestore },
       { path: '/password/change', method: 'put', handler: this.passwordChange },
       { path: '/profile', handler: this.profile, middlewares },
+      { path: '/profile/telegram-link', handler: this.telegramLink, middlewares },
       { path: '/profile/:id', handler: this.profileAdmin, middlewares: adminOnly },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
       { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
@@ -66,7 +66,7 @@ export class UserController extends BaseController {
 
       await Promise.all(
         emails.map((email) =>
-          this.redisService.set(this.tempMailKey(email), { email }, { EX: day }),
+          this.redisService.set(redisTempMailKey(email), { email }, { EX: day }),
         ),
       );
 
@@ -132,6 +132,12 @@ export class UserController extends BaseController {
     res.json(result);
   }
 
+  async telegramLink(req: Request, res: Response) {
+    const result = await this.service.getTelegramLink(res.locals.user.id);
+
+    res.json(result);
+  }
+
   async login(req: Request, res: Response) {
     const body = validate(LoginDto, req.body);
 
@@ -158,7 +164,7 @@ export class UserController extends BaseController {
 
   async register(req: Request, res: Response) {
     const body = validate(RegisterDto, req.body);
-    const tempMail = await this.redisService.get(this.tempMailKey(body.email.split('@')[1] ?? ''));
+    const tempMail = await this.redisService.get(redisTempMailKey(body.email.split('@')[1] ?? ''));
     if (tempMail) {
       throw new BadRequestException('Bad email');
     }

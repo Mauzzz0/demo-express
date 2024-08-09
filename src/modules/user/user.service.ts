@@ -4,6 +4,11 @@ import { v4 } from 'uuid';
 
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
+import {
+  redisRefreshTokenKey,
+  redisRestorePasswordKey,
+  redisTelegramKey,
+} from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
 import {
   BadRequestException,
@@ -14,28 +19,23 @@ import {
 import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { MailService } from '../mail/mail.service';
+import { TelegramService } from '../telegram/telegram.service';
 import { JwtService } from './jwt.service';
 import { ChangePasswordDto, LoginDto } from './user.dto';
 
 @injectable()
 export class UserService {
-  private readonly redisRefreshTokenKey = (userId: number) => `refresh:user-${userId}`;
-  private readonly redisRestorePasswordKey = (userId: number) => `restore:user-${userId}`;
-
   constructor(
     @inject(Components.JwtService) private readonly jwtService: JwtService,
     @inject(Components.ConfigService) private readonly config: ConfigService,
     @inject(Components.MailService) private readonly mail: MailService,
     @inject(Components.Redis) private readonly redis: RedisService,
+    @inject(Components.Telegram) private readonly telegram: TelegramService,
   ) {}
 
   private async setNewRefreshToken(userId: number, token: string) {
     const secondsInDay = 60 * 60 * 24;
-    return this.redis.set(
-      this.redisRefreshTokenKey(userId),
-      { userId, token },
-      { EX: secondsInDay },
-    );
+    return this.redis.set(redisRefreshTokenKey(userId), { userId, token }, { EX: secondsInDay });
   }
 
   async passwordRestore(email: UserModel['email']) {
@@ -46,10 +46,21 @@ export class UserService {
 
     const restoreKey = v4();
 
-    await this.redis.set(this.redisRestorePasswordKey(user.id), { restoreKey }, { EX: 3600 });
+    await this.redis.set(redisRestorePasswordKey(user.id), { restoreKey }, { EX: 3600 });
     await this.mail.sendRestoreMessage(user.email, restoreKey);
 
     return true;
+  }
+
+  async getTelegramLink(userId: number) {
+    const key = v4();
+    await this.redis.set(redisTelegramKey(key), { userId }, { EX: 3600 });
+
+    const { username } = await this.telegram.bot.telegram.getMe();
+
+    const link = `https://t.me/${username}?start=${key}`;
+
+    return { link };
   }
 
   async passwordChange(dto: ChangePasswordDto) {
@@ -60,7 +71,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    const value = await this.redis.get(this.redisRestorePasswordKey(user.id));
+    const value = await this.redis.get(redisRestorePasswordKey(user.id));
     if (!value || value.restoreKey !== restoreKey) {
       throw new UnauthorizedException();
     }
@@ -68,7 +79,7 @@ export class UserService {
     user.password = hashSync(dto.password, this.config.env.SALT);
     await user.save();
 
-    await this.redis.delete(this.redisRestorePasswordKey(user.id));
+    await this.redis.delete(redisRestorePasswordKey(user.id));
 
     return true;
   }
@@ -135,16 +146,16 @@ export class UserService {
   }
 
   async logout(userId: number) {
-    await this.redis.delete(this.redisRefreshTokenKey(userId));
+    await this.redis.delete(redisRefreshTokenKey(userId));
 
     return true;
   }
 
   async refresh(userId: number, token: string) {
-    const refreshTokenData = await this.redis.get(this.redisRefreshTokenKey(userId));
+    const refreshTokenData = await this.redis.get(redisRefreshTokenKey(userId));
     const valid = this.jwtService.verify(token, 'refresh');
 
-    if (!valid || !refreshTokenData || token != refreshTokenData.token) {
+    if (!valid || !refreshTokenData || token !== refreshTokenData.token) {
       throw new UnauthorizedException();
     }
 
@@ -154,7 +165,7 @@ export class UserService {
 
     const pair = this.jwtService.makeTokenPair(user);
 
-    await this.redis.delete(this.redisRefreshTokenKey(userId));
+    await this.redis.delete(redisRefreshTokenKey(userId));
     await this.setNewRefreshToken(user.id, pair.refreshToken);
 
     return pair;
