@@ -1,7 +1,10 @@
+import axios from 'axios';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
 import { UserRole } from '../../database/models';
+import { RedisService } from '../../database/redis/redis.service';
+import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id.number.dto';
@@ -15,14 +18,19 @@ import { UserService } from './user.service';
 
 @injectable()
 export class UserController extends BaseController {
+  private readonly tempMailKey = (mail: string) => `temp-mail:${mail}`;
+
   constructor(
     @inject(Components.UserService)
     private readonly service: UserService,
     @inject(Components.JwtService)
     private readonly jwtService: JwtService,
+    @inject(Components.Redis)
+    private readonly redisService: RedisService,
   ) {
     super();
     this.initRoutes();
+    this.loadTempMails();
   }
 
   initRoutes() {
@@ -44,6 +52,28 @@ export class UserController extends BaseController {
     ];
 
     this.addRoute(routes);
+  }
+
+  async loadTempMails() {
+    try {
+      const url =
+        'https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt';
+
+      const { data } = await axios.get<string>(url);
+      const emails = data.split('\n');
+
+      const day = 86400;
+
+      await Promise.all(
+        emails.map((email) =>
+          this.redisService.set(this.tempMailKey(email), { email }, { EX: day }),
+        ),
+      );
+
+      return true;
+    } catch (error) {
+      return error;
+    }
   }
 
   async passwordRestore(req: Request, res: Response) {
@@ -128,6 +158,10 @@ export class UserController extends BaseController {
 
   async register(req: Request, res: Response) {
     const body = validate(RegisterDto, req.body);
+    const tempMail = await this.redisService.get(this.tempMailKey(body.email.split('@')[1] ?? ''));
+    if (tempMail) {
+      throw new BadRequestException('Bad email');
+    }
 
     await this.service.register(body);
 
