@@ -8,7 +8,8 @@
     "start": "clear && cross-env NODE_ENV=dev ts-node src/main.ts",
     "start:prod": "cross-env NODE_ENV=prod ts-node src/main.ts",
     "start:watch": "nodemon src/main.ts",
-    "generate": "ts-node src/cli/generate.ts"
+    "generate": "ts-node src/cli/generate.ts",
+    "sandbox": "ts-node sandbox/main.ts"
   },
   "author": "",
   "license": "ISC",
