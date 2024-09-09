@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 
 import { validate } from '../validation/validate';
 import { ConfigDto } from './config.dto';
+import config from './config.map';
 
 @injectable()
 export class ConfigService {
@@ -11,13 +12,11 @@ export class ConfigService {
   constructor() {
     const path = process.env.NODE_ENV === 'prod' ? '.env.production' : '.env';
 
-    const result = dotenv.config({ path });
+    dotenv.config({ path });
 
-    if (result.error) {
-      throw result.error;
-    }
+    const result = config();
 
-    this.config = validate(ConfigDto, result.parsed);
+    this.config = validate(ConfigDto, result);
   }
 
   get env(): ConfigDto {
@@ -25,12 +24,8 @@ export class ConfigService {
   }
 
   get redisConnectionString(): string {
-    const user = this.config.REDIS_USERNAME;
-    const password = this.config.REDIS_PASSWORD;
-    const host = this.config.REDIS_HOST;
-    const port = this.config.REDIS_PORT;
-    const db = this.config.REDIS_DATABASE;
+    const { username, password, host, port, database } = this.config.redis;
 
-    return `redis://${user}:${password}@${host}:${port}/${db}`;
+    return `redis://${username}:${password}@${host}:${port}/${database}`;
   }
 }

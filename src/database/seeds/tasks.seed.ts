@@ -5,8 +5,8 @@ import { ConfigService } from '../../config/config.service';
 import { TaskModel, TimeModel, UserModel } from '../models';
 
 export const tasksSeed = async (config: ConfigService) => {
-  if (config.env.ENV === Environment.dev) {
-    const admin = await UserModel.findOne({ where: { nick: config.env.ADMIN_NICK } });
+  if (config.env.env === Environment.dev) {
+    const admin = await UserModel.findOne({ where: { nick: config.env.admin.nick } });
 
     if (admin) {
       const tasks: Partial<TaskModel>[] = [

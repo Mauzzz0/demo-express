@@ -1,5 +1,13 @@
-import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { plainToInstance, Transform, Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
+
+import {
+  AdminConfigDto,
+  JwtConfigDto,
+  PostgresConfigDto,
+  RedisConfigDto,
+  SmtpConfigDto,
+} from './dto';
 
 export enum Environment {
   prod = 'prod',
@@ -8,70 +16,32 @@ export enum Environment {
 
 export class ConfigDto {
   @IsEnum(Environment)
-  ENV: Environment;
+  env: Environment;
 
   @IsNumber()
   @Type(() => Number)
-  PORT: number;
+  port: number;
 
-  @IsNumber()
-  @Type(() => Number)
-  SALT: number;
+  @ValidateNested()
+  @Transform(({ value }) => plainToInstance(JwtConfigDto, value))
+  jwt: JwtConfigDto;
 
-  @IsString()
-  JWT_ACCESS_SECRET: string;
-
-  @IsString()
-  JWT_REFRESH_SECRET: string;
+  @ValidateNested()
+  @Transform(({ value }) => plainToInstance(AdminConfigDto, value))
+  admin: AdminConfigDto;
 
   @IsString()
-  ADMIN_NICK: string;
+  telegramToken: string;
 
-  @IsString()
-  ADMIN_PASSWORD: string;
+  @ValidateNested()
+  @Transform(({ value }) => plainToInstance(SmtpConfigDto, value))
+  smtp: SmtpConfigDto;
 
-  @IsString()
-  ADMIN_EMAIL: string;
+  @ValidateNested()
+  @Transform(({ value }) => plainToInstance(PostgresConfigDto, value))
+  postgres: PostgresConfigDto;
 
-  @IsString()
-  TELEGRAM_TOKEN: string;
-
-  @IsString()
-  SMTP_USER: string;
-
-  @IsString()
-  SMTP_PASS: string;
-
-  @IsString()
-  POSTGRESQL_HOST: string;
-
-  @IsString()
-  POSTGRESQL_DATABASE: string;
-
-  @IsString()
-  POSTGRESQL_USERNAME: string;
-
-  @IsString()
-  POSTGRESQL_PASSWORD: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  POSTGRESQL_PORT: number;
-
-  @IsString()
-  REDIS_HOST: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  REDIS_DATABASE: number;
-
-  @IsString()
-  REDIS_USERNAME: string;
-
-  @IsString()
-  REDIS_PASSWORD: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  REDIS_PORT: number;
+  @ValidateNested()
+  @Transform(({ value }) => plainToInstance(RedisConfigDto, value))
+  redis: RedisConfigDto;
 }

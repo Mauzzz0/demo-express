@@ -15,17 +15,17 @@ export class MailService {
       host: 'smtp.yandex.ru',
       port: 587,
       secure: false,
-      auth: { user: this.config.env.SMTP_USER, pass: this.config.env.SMTP_PASS },
+      auth: { user: this.config.env.smtp.user, pass: this.config.env.smtp.pass },
     });
   }
 
   public async sendMail(options: Omit<Mail.Options, 'from'>): Promise<void> {
-    return this.transport.sendMail({ from: `${this.config.env.SMTP_USER}@yandex.ru`, ...options });
+    return this.transport.sendMail({ from: `${this.config.env.smtp.user}@yandex.ru`, ...options });
   }
 
   public async sendRestoreMessage(to: string, key: string) {
     await this.transport.sendMail({
-      from: `${this.config.env.SMTP_USER}@yandex.ru`,
+      from: `${this.config.env.smtp.user}@yandex.ru`,
       to,
       subject: 'Restore password',
       html: `Your key for password changing: <b>${key}</b>`,

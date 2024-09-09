@@ -30,12 +30,8 @@ export class App {
 
   private async connectPostgres() {
     const sequelize = new Sequelize({
+      ...this.config.env.postgres,
       dialect: 'postgres',
-      host: this.config.env.POSTGRESQL_HOST,
-      database: this.config.env.POSTGRESQL_DATABASE,
-      username: this.config.env.POSTGRESQL_USERNAME,
-      password: this.config.env.POSTGRESQL_PASSWORD,
-      port: this.config.env.POSTGRESQL_PORT,
       logging: false,
     });
 
@@ -81,7 +77,7 @@ export class App {
   }
 
   private start() {
-    const port = this.config.env.PORT;
+    const port = this.config.env.port;
 
     this.server.listen(port, () => {
       console.log(`Server is started on port ${port}...`);

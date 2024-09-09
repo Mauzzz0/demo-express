@@ -17,10 +17,10 @@ export class JwtService {
   makeTokenPair(user: UserModel): TokenPair {
     const payload = { id: user.id };
 
-    const accessToken = jwt.sign(payload, this.config.env.JWT_ACCESS_SECRET, {
+    const accessToken = jwt.sign(payload, this.config.env.jwt.accessSecret, {
       expiresIn: '1h',
     });
-    const refreshToken = jwt.sign(payload, this.config.env.JWT_REFRESH_SECRET);
+    const refreshToken = jwt.sign(payload, this.config.env.jwt.refreshSecret);
 
     return { accessToken, refreshToken };
   }
@@ -29,7 +29,7 @@ export class JwtService {
     let result = false;
 
     const secret =
-      type === 'access' ? this.config.env.JWT_ACCESS_SECRET : this.config.env.JWT_REFRESH_SECRET;
+      type === 'access' ? this.config.env.jwt.accessSecret : this.config.env.jwt.refreshSecret;
 
     jwt.verify(token, secret, (err) => {
       result = !err;

@@ -1,4 +1,4 @@
-import { SetOptions } from '@redis/client/dist/lib/commands/SET';
+import { SetOptions } from '@redis/client';
 import { inject, injectable } from 'inversify';
 import { createClient } from 'redis';
 

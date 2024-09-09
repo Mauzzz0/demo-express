@@ -5,12 +5,12 @@ import { ConfigService } from '../../config/config.service';
 import { UserModel, UserRole } from '../models';
 
 export const adminSeed = async (config: ConfigService) => {
-  if (config.env.ENV === Environment.dev) {
+  if (config.env.env === Environment.dev) {
     const admin = {
-      nick: config.env.ADMIN_NICK,
-      email: config.env.ADMIN_EMAIL,
+      nick: config.env.admin.nick,
+      email: config.env.admin.email,
       role: UserRole.admin,
-      password: hashSync(config.env.ADMIN_PASSWORD, config.env.SALT),
+      password: hashSync(config.env.admin.password, config.env.jwt.salt),
     };
 
     const exists = await UserModel.findOne({ where: { nick: admin.nick } });

@@ -15,7 +15,7 @@ export class TelegramService {
     @inject(Components.ConfigService) private readonly config: ConfigService,
     @inject(Components.Redis) private readonly redis: RedisService,
   ) {
-    this.bot = new Telegraf(this.config.env.TELEGRAM_TOKEN);
+    this.bot = new Telegraf(this.config.env.telegramToken);
   }
 
   async start() {

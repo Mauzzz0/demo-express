@@ -76,7 +76,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    user.password = hashSync(dto.password, this.config.env.SALT);
+    user.password = hashSync(dto.password, this.config.env.jwt.salt);
     await user.save();
 
     await this.redis.delete(redisRestorePasswordKey(user.id));
@@ -136,7 +136,7 @@ export class UserService {
       throw new BadRequestException('User with this nick already exists');
     }
 
-    dto.password = hashSync(dto.password, this.config.env.SALT);
+    dto.password = hashSync(dto.password, this.config.env.jwt.salt);
 
     // TODO: Пофиксить
     // @ts-ignore
