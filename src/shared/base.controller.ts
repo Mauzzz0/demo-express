@@ -5,11 +5,7 @@ import { Route } from './types';
 
 @injectable()
 export abstract class BaseController {
-  public readonly router: Router;
-
-  constructor() {
-    this.router = Router();
-  }
+  public readonly router: Router = Router();
 
   public addRoute(routes: Route | Route[]) {
     for (const route of [routes].flat(2)) {
