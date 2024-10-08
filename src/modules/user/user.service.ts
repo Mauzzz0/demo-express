@@ -1,21 +1,11 @@
 import { compareSync, hashSync } from 'bcrypt';
 import { inject, injectable } from 'inversify';
 import { v4 } from 'uuid';
-
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
-import {
-  redisRefreshTokenKey,
-  redisRestorePasswordKey,
-  redisTelegramKey,
-} from '../../database/redis/redis.keys';
+import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UnauthorizedException,
-} from '../../errors';
+import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
 import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { MailService } from '../mail/mail.service';
@@ -138,9 +128,10 @@ export class UserService {
 
     dto.password = hashSync(dto.password, this.config.env.jwt.salt);
 
-    // TODO: Пофиксить
-    // @ts-ignore
-    await UserModel.create(dto);
+    await UserModel.create({
+      nick: dto.nick,
+      password: dto.password,
+    });
 
     return true;
   }
