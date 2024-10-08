@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-
 import { validate } from '../validation/validate';
 import { GenerateCommandOptions } from './dto';
 import { words } from './mock.values';

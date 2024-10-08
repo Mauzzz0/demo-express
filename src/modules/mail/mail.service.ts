@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import nodemailer, { Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-
 import { ConfigService } from '../../config/config.service';
 import { Components } from '../../shared/inversify.types';
 

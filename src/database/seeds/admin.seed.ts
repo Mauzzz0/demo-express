@@ -1,5 +1,4 @@
 import { hashSync } from 'bcrypt';
-
 import { Environment } from '../../config/config.dto';
 import { ConfigService } from '../../config/config.service';
 import { UserModel, UserRole } from '../models';

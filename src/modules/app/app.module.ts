@@ -1,5 +1,4 @@
 import { Container } from 'inversify';
-
 import { ConfigService } from '../../config/config.service';
 import { Components } from '../../shared/inversify.types';
 import { App } from './app';

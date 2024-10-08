@@ -1,5 +1,4 @@
 import { Container } from 'inversify';
-
 import { Components } from '../../shared/inversify.types';
 import { RedisService } from './redis.service';
 

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-
 import { UserRole } from '../../database/models';
 import { redisTempMailKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
@@ -56,19 +55,14 @@ export class UserController extends BaseController {
 
   async loadTempMails() {
     try {
-      const url =
-        'https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt';
+      const url = 'https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt';
 
       const { data } = await axios.get<string>(url);
       const emails = data.split('\n');
 
       const day = 86400;
 
-      await Promise.all(
-        emails.map((email) =>
-          this.redisService.set(redisTempMailKey(email), { email }, { EX: day }),
-        ),
-      );
+      await Promise.all(emails.map((email) => this.redisService.set(redisTempMailKey(email), { email }, { EX: day })));
 
       return true;
     } catch (error) {

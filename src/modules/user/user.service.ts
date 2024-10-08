@@ -66,7 +66,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    user.password = hashSync(dto.password, this.config.env.jwt.salt);
+    user.password = hashSync(password, this.config.env.jwt.salt);
     await user.save();
 
     await this.redis.delete(redisRestorePasswordKey(user.id));

@@ -1,6 +1,5 @@
 import { CronJob } from 'cron';
 import { inject, injectable } from 'inversify';
-
 import { Components } from '../../shared/inversify.types';
 import { TelegramService } from '../telegram/telegram.service';
 import { CronSchedule } from './cron.schedule';

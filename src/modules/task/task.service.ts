@@ -1,6 +1,5 @@
 import { injectable } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
-
 import { TaskModel, TimeModel, UserModel } from '../../database/models';
 import { NotFoundException } from '../../errors';
 import { CreateTaskDto, GetTaskListDto } from './task.dto';

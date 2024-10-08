@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import { Telegraf } from 'telegraf';
-
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
 import { redisTelegramKey } from '../../database/redis/redis.keys';

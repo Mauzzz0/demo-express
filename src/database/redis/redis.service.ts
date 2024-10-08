@@ -1,7 +1,6 @@
 import { SetOptions } from '@redis/client';
 import { inject, injectable } from 'inversify';
 import { createClient } from 'redis';
-
 import { ConfigService } from '../../config/config.service';
 import { Components } from '../../shared/inversify.types';
 

@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
-
 import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
 import { BadRequestException } from '../../errors';
@@ -28,8 +27,7 @@ export class JwtService {
   verify(token: string, type: 'access' | 'refresh'): boolean {
     let result = false;
 
-    const secret =
-      type === 'access' ? this.config.env.jwt.accessSecret : this.config.env.jwt.refreshSecret;
+    const secret = type === 'access' ? this.config.env.jwt.accessSecret : this.config.env.jwt.refreshSecret;
 
     jwt.verify(token, secret, (err) => {
       result = !err;

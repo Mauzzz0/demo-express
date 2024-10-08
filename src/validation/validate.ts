@@ -1,6 +1,5 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-
 import { BadRequestException } from '../errors';
 import { Constructor } from './types';
 

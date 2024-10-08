@@ -1,5 +1,4 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-
 import { TaskModel } from './task.model';
 
 export enum UserRole {

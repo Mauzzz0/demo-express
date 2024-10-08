@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { injectable } from 'inversify';
-
 import { Route } from './types';
 
 @injectable()

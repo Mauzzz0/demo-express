@@ -1,8 +1,6 @@
 import 'express-async-errors';
 import 'reflect-metadata';
-
 import { Container } from 'inversify';
-
 import { createRedisModule } from './database/redis/redis.module';
 import { RedisService } from './database/redis/redis.service';
 import { App } from './modules/app/app';

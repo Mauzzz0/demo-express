@@ -2,7 +2,6 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
-
 import { logRoutes } from '../../bootstrap/logRoutes';
 import { ConfigService } from '../../config/config.service';
 import { models } from '../../database/models';

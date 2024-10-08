@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import { injectable } from 'inversify';
-
 import { validate } from '../validation/validate';
 import { ConfigDto } from './config.dto';
 import config from './config.map';
