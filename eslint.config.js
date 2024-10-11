@@ -63,6 +63,7 @@ module.exports = [
       eqeqeq: 'error',
       'max-classes-per-file': 'off',
       'no-console': 'off',
+      'no-case-declarations': 'off',
       'no-eval': 'error',
       'no-alert': 'warn',
       'no-compare-neg-zero': 'warn',
