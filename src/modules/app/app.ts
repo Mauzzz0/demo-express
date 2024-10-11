@@ -6,7 +6,7 @@ import { logRoutes } from '../../bootstrap/logRoutes';
 import { ConfigService } from '../../config/config.service';
 import { models } from '../../database/models';
 import { seeds } from '../../database/seeds';
-import { ErrorHandler, LogMiddleware, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
+import { ErrorHandler, LogMiddleware, rateLimiter, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
 import { Components } from '../../shared/inversify.types';
 import { setupSwagger } from '../../swagger/setupSwagger';
 import { TaskController } from '../task/task.controller';
@@ -45,6 +45,7 @@ export class App {
   }
 
   private initMiddlewares() {
+    this.server.use(rateLimiter);
     this.server.use(SessionMiddleware);
     this.server.use(ViewsMiddleware);
     this.server.use(express.json());
