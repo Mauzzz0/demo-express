@@ -15,3 +15,12 @@ npm ci
 ```shell
 cp .env.example .env
 ```
+
+## Запуск приложения
+```shell
+# Dev-окружение
+npm run start
+
+# Prod-окружение
+npm run start:prod
+```
