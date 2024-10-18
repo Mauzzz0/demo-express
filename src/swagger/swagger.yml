@@ -13,7 +13,7 @@ security:
   - bearer: []
 
 paths:
-  /user/signup:
+  /user/register:
     post:
       tags:
         - User
