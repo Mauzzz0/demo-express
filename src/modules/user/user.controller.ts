@@ -7,7 +7,7 @@ import { RedisService } from '../../database/redis/redis.service';
 import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
-import { IdNumberDto } from '../../shared/id.number.dto';
+import { IdNumberDto } from '../../shared/id-number.dto';
 import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { Route } from '../../shared/types';

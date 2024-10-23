@@ -2,13 +2,13 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
-import { logRoutes } from '../../bootstrap/logRoutes';
+import { logRoutes } from '../../bootstrap/log-routes';
 import { ConfigService } from '../../config/config.service';
 import { models } from '../../database/models';
 import { seeds } from '../../database/seeds';
 import { ErrorHandler, LogMiddleware, rateLimiter, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
 import { Components } from '../../shared/inversify.types';
-import { setupSwagger } from '../../swagger/setupSwagger';
+import { setupSwagger } from '../../swagger/setup-swagger';
 import { TaskController } from '../task/task.controller';
 import { UserController } from '../user/user.controller';
 

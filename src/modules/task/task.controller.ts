@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { UserRole } from '../../database/models';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
-import { IdNumberDto } from '../../shared/id.number.dto';
+import { IdNumberDto } from '../../shared/id-number.dto';
 import { Components } from '../../shared/inversify.types';
 import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
