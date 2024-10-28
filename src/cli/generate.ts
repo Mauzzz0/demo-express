@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { validate } from '../validation/validate';
 import { GenerateCommandOptions } from './dto';
-import { words } from './mock.values';
+import { words } from './mock-values';
 import { getRandomItems } from './utils';
 
 const params = { count: process.argv[2] };
