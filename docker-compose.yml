@@ -2,8 +2,8 @@ version: "3.9"
 services:
   postgres:
     container_name: express-postgres
-    image: postgres:16-alpine
-    restart: always
+    image: postgres:17-alpine
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -15,14 +15,14 @@ services:
     container_name: express-redis
     image: redis:7-alpine
     command: redis-server --requirepass redispassword
-    restart: always
+    restart: unless-stopped
     ports:
       - "6379:6379"
 
   rabbit:
     container_name: express-rabbit
     image: rabbitmq:3-management-alpine
-    restart: always
+    restart: unless-stopped
     ports:
       - "5672:5672"
       - "15672:15672"
