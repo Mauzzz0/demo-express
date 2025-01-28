@@ -6,7 +6,6 @@ import { UserModel } from '../../database/models';
 import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
-import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
@@ -16,11 +15,11 @@ import { ChangePasswordDto, LoginDto } from './user.dto';
 @injectable()
 export class UserService {
   constructor(
-    @inject(Components.JwtService) private readonly jwtService: JwtService,
-    @inject(Components.ConfigService) private readonly config: ConfigService,
-    @inject(Components.MailService) private readonly mail: MailService,
-    @inject(Components.Redis) private readonly redis: RedisService,
-    @inject(Components.Telegram) private readonly telegram: TelegramService,
+    @inject(JwtService) private readonly jwtService: JwtService,
+    @inject(ConfigService) private readonly config: ConfigService,
+    @inject(MailService) private readonly mail: MailService,
+    @inject(RedisService) private readonly redis: RedisService,
+    @inject(TelegramService) private readonly telegram: TelegramService,
   ) {}
 
   private async setNewRefreshToken(userId: number, token: string) {

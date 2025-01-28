@@ -2,13 +2,12 @@ import { inject, injectable } from 'inversify';
 import nodemailer, { Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { ConfigService } from '../../config/config.service';
-import { Components } from '../../shared/inversify.types';
 
 @injectable()
 export class MailService {
   private readonly transport: Transporter;
 
-  constructor(@inject(Components.ConfigService) private readonly config: ConfigService) {
+  constructor(@inject(ConfigService) private readonly config: ConfigService) {
     this.transport = nodemailer.createTransport({
       service: 'yandex',
       host: 'smtp.yandex.ru',

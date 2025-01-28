@@ -12,7 +12,6 @@ import { createTaskModule } from './modules/task/task.module';
 import { createTelegramModule } from './modules/telegram/telegram.module';
 import { TelegramService } from './modules/telegram/telegram.service';
 import { createUserModule } from './modules/user/user.module';
-import { Components } from './shared/inversify.types';
 
 const bootstrap = async () => {
   const app = Container.merge(
@@ -25,16 +24,16 @@ const bootstrap = async () => {
     createMailModule(),
   );
 
-  const redis = app.get<RedisService>(Components.Redis);
+  const redis = app.get<RedisService>(RedisService);
   await redis.connect();
 
-  const telegram = app.get<TelegramService>(Components.Telegram);
+  const telegram = app.get<TelegramService>(TelegramService);
   await telegram.start();
 
-  const cron = app.get<CronService>(Components.CronService);
+  const cron = app.get<CronService>(CronService);
   cron.startJobs();
 
-  const server = app.get<App>(Components.Application);
+  const server = app.get<App>(App);
   await server.init();
 };
 

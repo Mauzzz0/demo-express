@@ -8,7 +8,6 @@ import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id-number.dto';
-import { Components } from '../../shared/inversify.types';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
@@ -19,11 +18,11 @@ import { UserService } from './user.service';
 @injectable()
 export class UserController extends BaseController {
   constructor(
-    @inject(Components.UserService)
+    @inject(UserService)
     private readonly service: UserService,
-    @inject(Components.JwtService)
+    @inject(JwtService)
     private readonly jwtService: JwtService,
-    @inject(Components.Redis)
+    @inject(RedisService)
     private readonly redisService: RedisService,
   ) {
     super();

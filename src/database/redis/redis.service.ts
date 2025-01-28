@@ -2,14 +2,13 @@ import { SetOptions } from '@redis/client';
 import { inject, injectable } from 'inversify';
 import { createClient } from 'redis';
 import { ConfigService } from '../../config/config.service';
-import { Components } from '../../shared/inversify.types';
 
 @injectable()
 export class RedisService {
   private redis: ReturnType<typeof createClient>;
 
   constructor(
-    @inject(Components.ConfigService)
+    @inject(ConfigService)
     private readonly config: ConfigService,
   ) {}
 
