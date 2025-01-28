@@ -7,7 +7,6 @@ import { ConfigService } from '../../config/config.service';
 import { models } from '../../database/models';
 import { seeds } from '../../database/seeds';
 import { ErrorHandler, LogMiddleware, rateLimiter, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
-import { Components } from '../../shared/inversify.types';
 import { setupSwagger } from '../../swagger/setup-swagger';
 import { TaskController } from '../task/task.controller';
 import { UserController } from '../user/user.controller';
@@ -17,11 +16,11 @@ export class App {
   private readonly server: Express;
 
   constructor(
-    @inject(Components.ConfigService)
+    @inject(ConfigService)
     private readonly config: ConfigService,
-    @inject(Components.UserController)
+    @inject(UserController)
     private readonly userController: UserController,
-    @inject(Components.TaskController)
+    @inject(TaskController)
     private readonly taskController: TaskController,
   ) {
     this.server = express();

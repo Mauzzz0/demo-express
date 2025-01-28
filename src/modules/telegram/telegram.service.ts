@@ -4,15 +4,14 @@ import { ConfigService } from '../../config/config.service';
 import { UserModel } from '../../database/models';
 import { redisTelegramKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
-import { Components } from '../../shared/inversify.types';
 
 @injectable()
 export class TelegramService {
   readonly bot: Telegraf;
 
   constructor(
-    @inject(Components.ConfigService) private readonly config: ConfigService,
-    @inject(Components.Redis) private readonly redis: RedisService,
+    @inject(ConfigService) private readonly config: ConfigService,
+    @inject(RedisService) private readonly redis: RedisService,
   ) {
     this.bot = new Telegraf(this.config.env.telegramToken);
   }

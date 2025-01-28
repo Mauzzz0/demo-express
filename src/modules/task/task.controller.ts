@@ -4,7 +4,6 @@ import { UserRole } from '../../database/models';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id-number.dto';
-import { Components } from '../../shared/inversify.types';
 import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
 import { JwtService } from '../user/jwt.service';
@@ -14,9 +13,9 @@ import { TaskService } from './task.service';
 @injectable()
 export class TaskController extends BaseController {
   constructor(
-    @inject(Components.TaskService)
+    @inject(TaskService)
     private readonly service: TaskService,
-    @inject(Components.JwtService)
+    @inject(JwtService)
     private readonly jwtService: JwtService,
   ) {
     super();
