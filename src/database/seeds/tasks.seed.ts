@@ -1,7 +1,6 @@
-import dayjs from 'dayjs';
 import { Environment } from '../../config/config.dto';
 import { ConfigService } from '../../config/config.service';
-import { TaskModel, TimeModel, UserModel } from '../models';
+import { TaskModel, UserModel } from '../models';
 
 export const tasksSeed = async (config: ConfigService) => {
   if (config.env.env === Environment.dev) {
@@ -21,13 +20,7 @@ export const tasksSeed = async (config: ConfigService) => {
       for (const task of tasks) {
         const exists = await TaskModel.findOne({ where: task });
         if (!exists) {
-          const createdTask = await TaskModel.create(task);
-          await TimeModel.create({
-            taskId: createdTask.id,
-            userId: admin.id,
-            date: dayjs().toISOString(),
-            time: '1 day',
-          });
+          await TaskModel.create(task);
 
           console.log(`Successfully seeded '${task.title}' task to default admin`);
         }

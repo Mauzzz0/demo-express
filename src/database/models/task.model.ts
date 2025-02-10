@@ -1,5 +1,4 @@
-import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
-import { TimeModel } from './time.model';
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { UserModel } from './user.model';
 
 export enum TaskSeverity {
@@ -59,10 +58,4 @@ export class TaskModel extends Model {
     onDelete: 'CASCADE',
   })
   public assignee: UserModel;
-
-  @HasMany(() => TimeModel, {
-    as: 'times',
-    foreignKey: 'taskId',
-  })
-  public times: TimeModel[];
 }
