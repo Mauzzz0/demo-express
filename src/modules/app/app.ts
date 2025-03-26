@@ -6,6 +6,7 @@ import { logRoutes } from '../../bootstrap/log-routes';
 import { ConfigService } from '../../config/config.service';
 import { models } from '../../database/models';
 import { seeds } from '../../database/seeds';
+import logger from '../../logger/pino.logger';
 import { ErrorHandler, LogMiddleware, rateLimiter, SessionMiddleware, ViewsMiddleware } from '../../middlewares';
 import { setupSwagger } from '../../swagger/setup-swagger';
 import { TaskController } from '../task/task.controller';
@@ -40,7 +41,7 @@ export class App {
       await seed(this.config);
     }
 
-    console.log('Successfully connected to database');
+    logger.info('Successfully connected to database');
   }
 
   private initMiddlewares() {
@@ -79,7 +80,7 @@ export class App {
     const port = this.config.env.port;
 
     this.server.listen(port, () => {
-      console.log(`Server is started on port ${port}...`);
+      logger.info(`Server is started on port ${port}...`);
     });
   }
 }

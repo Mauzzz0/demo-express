@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import nodemailer, { Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { ConfigService } from '../../config/config.service';
+import logger from '../../logger/pino.logger';
 
 @injectable()
 export class MailService {
@@ -29,7 +30,7 @@ export class MailService {
       html: `Your key for password changing: <b>${key}</b>`,
     });
 
-    console.log(`Successfully sent restore password mail to ${to}`);
+    logger.info(`Successfully sent restore password mail to ${to}`);
 
     return true;
   }

@@ -1,6 +1,7 @@
 import { hashSync } from 'bcrypt';
 import { Environment } from '../../config/config.dto';
 import { ConfigService } from '../../config/config.service';
+import logger from '../../logger/pino.logger';
 import { UserModel, UserRole } from '../models';
 
 export const adminSeed = async (config: ConfigService) => {
@@ -15,7 +16,7 @@ export const adminSeed = async (config: ConfigService) => {
     const exists = await UserModel.findOne({ where: { nick: admin.nick } });
     if (!exists) {
       await UserModel.create(admin);
-      console.log('Successfully seeded default admin');
+      logger.info('Successfully seeded default admin');
     }
   }
 };

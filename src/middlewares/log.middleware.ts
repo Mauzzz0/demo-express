@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import logger from '../logger/pino.logger';
 
 export const LogMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  console.log(`[${req.method}]: ${req.url}`);
-  console.log({
-    query: req.query,
-    body: req.body,
-  });
-  console.log();
+  logger.info(`[${req.method}]: ${req.url}`);
 
   next();
 };

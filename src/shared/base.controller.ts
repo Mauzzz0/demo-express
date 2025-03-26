@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { injectable } from 'inversify';
+import logger from '../logger/pino.logger';
 import { Route } from './types';
 
 @injectable()
@@ -13,7 +14,7 @@ export abstract class BaseController {
       const handlers = [...(route.middlewares ? route.middlewares : []), handler];
 
       this.router[method](route.path, handlers);
-      console.info(`Route registered: ${method.toUpperCase()} ${route.path}`);
+      logger.info(`Route registered: ${method.toUpperCase()} ${route.path}`);
     }
   }
 

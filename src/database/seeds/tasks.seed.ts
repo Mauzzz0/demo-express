@@ -1,5 +1,6 @@
 import { Environment } from '../../config/config.dto';
 import { ConfigService } from '../../config/config.service';
+import logger from '../../logger/pino.logger';
 import { TaskModel, UserModel } from '../models';
 
 export const tasksSeed = async (config: ConfigService) => {
@@ -22,7 +23,7 @@ export const tasksSeed = async (config: ConfigService) => {
         if (!exists) {
           await TaskModel.create(task);
 
-          console.log(`Successfully seeded '${task.title}' task to default admin`);
+          logger.info(`Successfully seeded '${task.title}' task to default admin`);
         }
       }
     }

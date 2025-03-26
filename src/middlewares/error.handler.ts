@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+import logger from '../logger/pino.logger';
 
 export const ErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (!err) next();
 
-  console.log(err);
+  logger.error(err);
 
   const status = err?.code ?? 500;
 

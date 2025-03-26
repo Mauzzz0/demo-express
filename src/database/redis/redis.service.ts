@@ -2,6 +2,7 @@ import { SetOptions } from '@redis/client';
 import { inject, injectable } from 'inversify';
 import { createClient } from 'redis';
 import { ConfigService } from '../../config/config.service';
+import logger from '../../logger/pino.logger';
 
 @injectable()
 export class RedisService {
@@ -19,7 +20,7 @@ export class RedisService {
     try {
       await client.connect();
     } catch (error) {
-      console.log("Can't connect to redis:");
+      logger.error("Can't connect to redis:");
       throw error;
     }
 
