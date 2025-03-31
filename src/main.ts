@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { createRedisModule } from './database/redis/redis.module';
 import { RedisService } from './database/redis/redis.service';
+import { createRabbitMQModule } from './message-broker/rabbitmq/rabbitmq.module';
 import { App } from './modules/app/app';
 import { createAppModule } from './modules/app/app.module';
 import { createCronModule } from './modules/cron/cron.module';
@@ -22,6 +23,7 @@ const bootstrap = async () => {
     createTelegramModule(),
     createCronModule(),
     createMailModule(),
+    createRabbitMQModule(),
   );
 
   const redis = app.get<RedisService>(RedisService);

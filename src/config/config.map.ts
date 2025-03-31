@@ -7,6 +7,7 @@ export type EnvStructure<T = any> = {
 const config = (): EnvStructure<ConfigDto> => ({
   env: process.env.NODE_ENV,
   port: process.env.PORT,
+  rabbitUri: process.env.RABBIT_URI,
   telegramToken: process.env.TELEGRAM_TOKEN,
   admin: {
     nick: process.env.ADMIN_NICK,

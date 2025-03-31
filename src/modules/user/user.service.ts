@@ -6,6 +6,8 @@ import { UserModel } from '../../database/models';
 import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../database/redis/redis.keys';
 import { RedisService } from '../../database/redis/redis.service';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
+import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq/rabbitmq.queues';
+import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service';
 import { PaginationDto } from '../../shared/pagination.dto';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
@@ -20,6 +22,7 @@ export class UserService {
     @inject(MailService) private readonly mail: MailService,
     @inject(RedisService) private readonly redis: RedisService,
     @inject(TelegramService) private readonly telegram: TelegramService,
+    @inject(RabbitMqService) private readonly rabbitMqService: RabbitMqService,
   ) {}
 
   private async setNewRefreshToken(userId: number, token: string) {
@@ -131,6 +134,8 @@ export class UserService {
       nick: dto.nick,
       password: dto.password,
     });
+
+    await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, JSON.stringify(dto));
 
     return true;
   }

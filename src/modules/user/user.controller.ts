@@ -37,7 +37,7 @@ export class UserController extends BaseController {
     const routes: Route[] = [
       { path: '', handler: this.list, middlewares: adminOnly },
       { path: '/login', method: 'post', handler: this.login },
-      { path: '/register', method: 'post', handler: this.register, middlewares: adminOnly },
+      { path: '/register', method: 'post', handler: this.register },
       { path: '/password/restore', method: 'post', handler: this.passwordRestore },
       { path: '/password/change', method: 'put', handler: this.passwordChange },
       { path: '/profile', handler: this.profile, middlewares },

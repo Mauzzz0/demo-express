@@ -15,6 +15,9 @@ export class ConfigDto {
   @Type(() => Number)
   port: number;
 
+  @IsString()
+  rabbitUri: string;
+
   @ValidateNested()
   @Transform(({ value }) => plainToInstance(JwtConfigDto, value))
   jwt: JwtConfigDto;
