@@ -13,16 +13,16 @@ export class TelegramService {
     @inject(ConfigService) private readonly config: ConfigService,
     @inject(RedisService) private readonly redis: RedisService,
   ) {
-    this.bot = new Telegraf(this.config.env.telegramToken);
+    // this.bot = new Telegraf(this.config.env.telegramToken);
   }
 
   async start() {
-    if (!this.bot) return;
-
-    this.initShutdownHooks();
-    this.initHandlers();
-
-    this.bot.launch();
+    // if (!this.bot) return;
+    //
+    // this.initShutdownHooks();
+    // this.initHandlers();
+    //
+    // this.bot.launch();
   }
 
   private initShutdownHooks() {
