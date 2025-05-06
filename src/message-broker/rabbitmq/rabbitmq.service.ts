@@ -1,7 +1,7 @@
 import { ChannelWrapper, connect } from 'amqp-connection-manager';
 import { inject } from 'inversify';
 import { ConfigService } from '../../config/config.service';
-import { NEW_REGISTRATION_QUEUE } from './rabbitmq.queues';
+import { RABBIT_MQ_QUEUES } from './rabbitmq.queues';
 
 export class RabbitMqService {
   public readonly channel: ChannelWrapper;
@@ -19,13 +19,13 @@ export class RabbitMqService {
   }
 
   async assertQueues() {
-    const cfg = {
-      durable: true,
-      exclusive: false,
-      autoDelete: false,
-    };
-
-    await this.channel.assertQueue(NEW_REGISTRATION_QUEUE, cfg);
+    for (const queue of RABBIT_MQ_QUEUES) {
+      await this.channel.assertQueue(queue, {
+        durable: true,
+        exclusive: false,
+        autoDelete: false,
+      });
+    }
   }
 
   async initHandlers() {
