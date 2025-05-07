@@ -15,10 +15,9 @@ export class RabbitMqService {
   async init() {
     await this.channel.waitForConnect();
     await this.assertQueues();
-    await this.initHandlers();
   }
 
-  async assertQueues() {
+  private async assertQueues() {
     for (const queue of RABBIT_MQ_QUEUES) {
       await this.channel.assertQueue(queue, {
         durable: true,
@@ -26,17 +25,5 @@ export class RabbitMqService {
         autoDelete: false,
       });
     }
-  }
-
-  async initHandlers() {
-    // await this.channel.consume(NEW_REGISTRATION_QUEUE, async (message) => {
-    //   const json = JSON.parse(message.content.toString());
-    //
-    //   await this.logRegistration(json);
-    // });
-  }
-
-  private async logRegistration(message: any) {
-    console.log(message);
   }
 }
