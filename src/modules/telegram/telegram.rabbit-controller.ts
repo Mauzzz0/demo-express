@@ -14,6 +14,7 @@ export class TelegramRabbitController {
       NEW_REGISTRATION_QUEUE,
       (data) => this.handleNewRegistrationQueue(data),
       {
+        noAck: true, // <-- ОЧЕНЬ ВАЖНАЯ НАСТРОЙКА!
         prefetch: 2, // <-- ОЧЕНЬ ВАЖНАЯ НАСТРОЙКА!
       },
     );
