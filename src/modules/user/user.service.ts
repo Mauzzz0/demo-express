@@ -12,7 +12,7 @@ import { PaginationDto } from '../../shared/pagination.dto';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { JwtService } from './jwt.service';
-import { ChangePasswordDto, LoginDto } from './user.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto } from './user.dto';
 
 @injectable()
 export class UserService {
@@ -119,18 +119,19 @@ export class UserService {
     return tokens;
   }
 
-  async register(dto: LoginDto) {
-    const userWithSameNick = await UserModel.findOne({
-      where: { nick: dto.nick },
+  async register(dto: RegisterDto) {
+    const userWithSameEmail = await UserModel.findOne({
+      where: { email: dto.email },
     });
 
-    if (userWithSameNick) {
-      throw new BadRequestException('User with this nick already exists');
+    if (userWithSameEmail) {
+      throw new BadRequestException('User with this email already exists');
     }
 
     dto.password = hashSync(dto.password, this.config.env.jwt.salt);
 
     await UserModel.create({
+      email: dto.email,
       nick: dto.nick,
       password: dto.password,
     });
