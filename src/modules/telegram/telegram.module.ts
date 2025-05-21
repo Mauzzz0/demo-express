@@ -8,5 +8,7 @@ export const createTelegramModule = () => {
   container.bind(TelegramService).toSelf().inSingletonScope();
   container.bind(TelegramRabbitController).toSelf().inSingletonScope();
 
+  container.get(TelegramRabbitController);
+
   return container;
 };
