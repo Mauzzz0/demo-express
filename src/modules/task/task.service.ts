@@ -27,7 +27,7 @@ export class TaskService {
 
   async getOne(id: TaskModel['id']) {
     const task = await TaskModel.findOne({
-      where: { id },
+      where: { id, example: 'Просто пример' },
       attributes: ['id', 'title', 'description', 'severity', 'createdAt'],
       include: [
         {
