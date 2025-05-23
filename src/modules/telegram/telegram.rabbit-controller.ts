@@ -5,7 +5,10 @@ import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service'
 
 @injectable()
 export class TelegramRabbitController {
-  constructor(@inject(RabbitMqService) private readonly rabbitMqService: RabbitMqService) {
+  constructor(
+    @inject(RabbitMqService)
+    private readonly rabbitMqService: RabbitMqService,
+  ) {
     this.assertHandler();
   }
 

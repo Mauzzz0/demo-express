@@ -4,7 +4,7 @@ import { RabbitMqService } from './rabbitmq.service';
 export const createRabbitMQModule = () => {
   const container = new Container();
 
-  container.bind(RabbitMqService).toSelf();
+  container.bind(RabbitMqService).toSelf().inSingletonScope();
 
   return container;
 };

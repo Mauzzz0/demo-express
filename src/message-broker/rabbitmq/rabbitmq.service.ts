@@ -1,8 +1,9 @@
 import { ChannelWrapper, connect } from 'amqp-connection-manager';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { ConfigService } from '../../config/config.service';
 import { RABBIT_MQ_QUEUES } from './rabbitmq.queues';
 
+@injectable()
 export class RabbitMqService {
   public readonly channel: ChannelWrapper;
 
@@ -21,8 +22,6 @@ export class RabbitMqService {
     for (const queue of RABBIT_MQ_QUEUES) {
       await this.channel.assertQueue(queue, {
         durable: true,
-        exclusive: false,
-        autoDelete: false,
       });
     }
   }

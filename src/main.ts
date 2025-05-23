@@ -11,6 +11,7 @@ import { CronService } from './modules/cron/cron.service';
 import { createMailModule } from './modules/mail/mail.module';
 import { createTaskModule } from './modules/task/task.module';
 import { createTelegramModule } from './modules/telegram/telegram.module';
+import { TelegramRabbitController } from './modules/telegram/telegram.rabbit-controller';
 import { TelegramService } from './modules/telegram/telegram.service';
 import { createUserModule } from './modules/user/user.module';
 
@@ -19,12 +20,14 @@ const bootstrap = async () => {
     createAppModule(),
     createUserModule(),
     createTaskModule(),
+    createRabbitMQModule(),
     createRedisModule(),
     createTelegramModule(),
     createCronModule(),
     createMailModule(),
-    createRabbitMQModule(),
   );
+
+  app.get(TelegramRabbitController);
 
   const redis = app.get<RedisService>(RedisService);
   await redis.connect();
