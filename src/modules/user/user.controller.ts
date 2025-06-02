@@ -44,7 +44,7 @@ export class UserController extends BaseController {
       { path: '/profile/telegram-link', handler: this.telegramLink, middlewares },
       { path: '/profile/:id', handler: this.profileAdmin, middlewares: adminOnly },
       { path: '/logout', method: 'post', handler: this.logout, middlewares },
-      { path: '/refresh', method: 'post', handler: this.refresh, middlewares },
+      { path: '/refresh', method: 'post', handler: this.refresh },
       { path: '/:id/block', method: 'post', handler: this.blockUser, middlewares: adminOnly },
       { path: '/:id/unblock', method: 'post', handler: this.unblockUser, middlewares: adminOnly },
     ];
@@ -140,17 +140,16 @@ export class UserController extends BaseController {
   }
 
   async logout(req: Request, res: Response) {
-    const { id } = res.locals.user;
-    await this.service.logout(id);
+    const { token } = validate(TokenDto, req.body);
+    await this.service.logout(token);
 
     res.json({ result: true });
   }
 
   async refresh(req: Request, res: Response) {
     const { token } = validate(TokenDto, req.body);
-    const { id } = res.locals.user;
 
-    const tokens = await this.service.refresh(id, token);
+    const tokens = await this.service.refresh(token);
 
     res.json(tokens);
   }

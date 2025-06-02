@@ -14,21 +14,24 @@ export class JwtService {
 
   makeTokenPair(user: UserModel): TokenPair {
     const payload = { id: user.id };
+    const { accessSecret, refreshSecret } = this.config.env.jwt;
 
-    const accessToken = jwt.sign(payload, this.config.env.jwt.accessSecret, {
-      expiresIn: '1h',
-    });
-    const refreshToken = jwt.sign(payload, this.config.env.jwt.refreshSecret);
+    const accessToken = jwt.sign(payload, accessSecret, { expiresIn: '1h' });
+    const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '1w' });
 
     return { accessToken, refreshToken };
   }
 
   verify(token: string, type: 'access' | 'refresh'): boolean {
     let result = false;
+    const { accessSecret, refreshSecret } = this.config.env.jwt;
 
-    const secret = type === 'access' ? this.config.env.jwt.accessSecret : this.config.env.jwt.refreshSecret;
+    const secrets = {
+      access: accessSecret,
+      refresh: refreshSecret,
+    };
 
-    jwt.verify(token, secret, (err) => {
+    jwt.verify(token, secrets[type], (err) => {
       result = !err;
     });
 

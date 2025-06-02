@@ -27,7 +27,7 @@ export class UserService {
 
   private async setNewRefreshToken(userId: number, token: string) {
     const secondsInDay = 60 * 60 * 24;
-    return this.redis.set(redisRefreshTokenKey(userId), { userId, token }, { EX: secondsInDay });
+    return this.redis.set(redisRefreshTokenKey(token), { userId }, { EX: secondsInDay });
   }
 
   async passwordRestore(email: UserModel['email']) {
@@ -141,27 +141,27 @@ export class UserService {
     return true;
   }
 
-  async logout(userId: number) {
-    await this.redis.delete(redisRefreshTokenKey(userId));
+  async logout(refreshToken: string) {
+    await this.redis.delete(redisRefreshTokenKey(refreshToken));
 
     return true;
   }
 
-  async refresh(userId: number, token: string) {
-    const refreshTokenData = await this.redis.get(redisRefreshTokenKey(userId));
+  async refresh(token: string) {
+    const refreshTokenData = await this.redis.get(redisRefreshTokenKey(token));
     const valid = this.jwtService.verify(token, 'refresh');
 
-    if (!valid || !refreshTokenData || token !== refreshTokenData.token) {
+    if (!valid || !refreshTokenData) {
       throw new UnauthorizedException();
     }
 
-    const { id } = this.jwtService.decode(token);
+    const { userId } = this.jwtService.decode(token);
 
-    const user = await this.profile(id);
+    const user = await this.profile(userId);
 
     const pair = this.jwtService.makeTokenPair(user);
 
-    await this.redis.delete(redisRefreshTokenKey(userId));
+    await this.redis.delete(redisRefreshTokenKey(token));
     await this.setNewRefreshToken(user.id, pair.refreshToken);
 
     return pair;
