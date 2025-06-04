@@ -15,7 +15,7 @@ import MailModule from './modules/mail/mail.module';
 import { TaskController } from './modules/task/task.controller';
 import TaskModule from './modules/task/task.module';
 import TelegramModule from './modules/telegram/telegram.module';
-import { TelegramRabbitController } from './modules/telegram/telegram.rabbit-controller';
+import { UserAmqpController } from './modules/user/user.amqp-controller';
 import { UserController } from './modules/user/user.controller';
 import UserModule from './modules/user/user.module';
 import { setupSwagger } from './swagger/setup-swagger';
@@ -63,19 +63,19 @@ const bootstrap = async () => {
   server.use('/task', taskController.router);
 
   // * * * * * * * * * * * * * * * *
-  // Error Handlers
+  // AMQP Controllers. Forced manual instantiating
   // * * * * * * * * * * * * * * * *
-  server.use(ErrorHandler);
-
-  // * * * * * * * * * * * * * * * *
-  // AMQP Controllers
-  // * * * * * * * * * * * * * * * *
-  app.get(TelegramRabbitController);
+  app.get(UserAmqpController);
 
   // * * * * * * * * * * * * * * * *
   // Configure Swagger
   // * * * * * * * * * * * * * * * *
   setupSwagger(server);
+
+  // * * * * * * * * * * * * * * * *
+  // Error Handlers
+  // * * * * * * * * * * * * * * * *
+  server.use(ErrorHandler);
 
   // * * * * * * * * * * * * * * * *
   // Log Registered Routes

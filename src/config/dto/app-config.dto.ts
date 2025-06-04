@@ -1,5 +1,5 @@
 import { plainToInstance, Transform, Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { AdminConfigDto, JwtConfigDto, PostgresConfigDto, SmtpConfigDto } from './index';
 
 export enum Environment {
@@ -30,7 +30,8 @@ export class AppConfigDto {
   admin: AdminConfigDto;
 
   @IsString()
-  telegramToken: string;
+  @IsOptional()
+  telegramToken?: string;
 
   @ValidateNested()
   @Transform(({ value }) => plainToInstance(SmtpConfigDto, value))

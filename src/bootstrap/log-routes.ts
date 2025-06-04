@@ -1,3 +1,5 @@
+import logger from '../logger';
+
 export const logRoutes = (server: any) => {
   const globalHandlers = server._router.stack;
 
@@ -7,7 +9,6 @@ export const logRoutes = (server: any) => {
 
       const nestedHandlers = globalHandler.handle.stack;
 
-      console.log(`== ${globalPath.toUpperCase()} ==`);
       nestedHandlers.map((nestedHandler: any) => {
         const { methods, path } = nestedHandler.route;
 
@@ -15,12 +16,10 @@ export const logRoutes = (server: any) => {
 
         const tabSize = 8;
         const spaces = tabSize - method.length;
-        console.log(`${method}:${' '.repeat(spaces)}/${globalPath}${path}`);
+        logger.info(`Mapped handler for ${method}:${' '.repeat(spaces)}/${globalPath}${path}`);
       });
     }
   });
-
-  console.log();
 };
 
 const split = (path: any) => {

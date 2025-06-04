@@ -2,14 +2,22 @@ import { inject, injectable } from 'inversify';
 import { Telegraf } from 'telegraf';
 import { redisTelegramKey } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
+import { appConfig } from '../../config';
 import { UserEntity } from '../../database';
+import logger from '../../logger';
 
 @injectable()
 export class TelegramService {
   readonly bot: Telegraf;
 
   constructor(@inject(RedisService) private readonly redis: RedisService) {
-    // this.bot = new Telegraf(this.config.env.telegramToken);
+    const token = appConfig.telegramToken;
+    if (token) {
+      this.bot = new Telegraf(token);
+      logger.info(`Telegram bot started`);
+    } else {
+      logger.warn('Telegram token is not set, bot is not started');
+    }
   }
 
   async start() {

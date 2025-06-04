@@ -20,6 +20,7 @@ import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { ChangePasswordDto, LoginDto, RegisterDto } from './dto';
+import { NewRegistrationMessage } from './user.types';
 
 @injectable()
 export class UserService {
@@ -183,7 +184,13 @@ export class UserService {
       password: dto.password,
     });
 
-    await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, dto);
+    const message: NewRegistrationMessage = {
+      id: created.id,
+      name: created.name,
+      email: created.email,
+    };
+
+    await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, message);
 
     return this.profile(created.id);
   }

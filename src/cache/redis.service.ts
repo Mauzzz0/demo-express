@@ -15,6 +15,7 @@ export class RedisService {
   async connect() {
     try {
       await this.redis.connect();
+      logger.info('Successfully connected to Redis');
     } catch (err) {
       logger.error("Can't connect to Redis:");
       logger.error(err);

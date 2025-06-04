@@ -32,5 +32,5 @@ export const connectToPostgres = async () => {
     await seed();
   }
 
-  logger.info('Successfully connected to database');
+  logger.info('Successfully connected to PostgreSQL');
 };
