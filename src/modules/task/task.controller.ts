@@ -5,7 +5,7 @@ import { IdNumberDto } from '../../shared';
 import { validate } from '../../validation/validate';
 import { JwtService } from '../user/jwt.service';
 import { UserRole } from '../user/user.types';
-import { CreateTaskDto, GetTaskListDto } from './task.dto';
+import { CreateTaskDto, GetTaskListDto } from './dto';
 import { TaskService } from './task.service';
 
 @injectable()

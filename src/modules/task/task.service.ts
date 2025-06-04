@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
-import { TaskEntity, UserEntity } from '../../database/entities';
+import { TaskEntity, UserEntity } from '../../database';
 import { NotFoundException } from '../../errors';
-import { CreateTaskDto, GetTaskListDto } from './task.dto';
+import { CreateTaskDto, GetTaskListDto } from './dto';
 
 @injectable()
 export class TaskService {

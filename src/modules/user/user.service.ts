@@ -18,8 +18,8 @@ import { RabbitMqService } from '../../message-broker/rabbitmq.service';
 import { PaginationDto, TimeInSeconds } from '../../shared';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
+import { ChangePasswordDto, LoginDto, RegisterDto } from './dto';
 import { JwtService } from './jwt.service';
-import { ChangePasswordDto, LoginDto, RegisterDto } from './user.dto';
 
 @injectable()
 export class UserService {

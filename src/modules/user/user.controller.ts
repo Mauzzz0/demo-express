@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { IdNumberDto, PaginationDto } from '../../shared';
 import { validate } from '../../validation/validate';
+import { ChangePasswordDto, LoginDto, RegisterDto, RestorePasswordDto, TokenDto } from './dto';
 import { JwtService } from './jwt.service';
-import { ChangePasswordDto, LoginDto, RegisterDto, RestorePasswordDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
 import { UserRole } from './user.types';
 
