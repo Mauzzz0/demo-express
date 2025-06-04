@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { NextFunction, Request, Response } from 'express';
 import { TooManyRequestsException } from '../exceptions';
 
-const limit = 10;
+const limit = 100;
 const range = 'minute';
 
 const storage = {

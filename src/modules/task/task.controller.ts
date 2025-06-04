@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
-import { IdNumberDto } from '../../shared';
+import { IdNumberDto, PaginationDto } from '../../shared';
 import { validate } from '../../validation';
 import { JwtService } from '../jwt/jwt.service';
 import { UserRole } from '../user/user.types';
@@ -25,6 +25,8 @@ export class TaskController {
     this.router.post('/', authentication, (req: Request, res: Response) => this.create(req, res));
 
     // Read
+    this.router.get('/authored', authentication, (req: Request, res: Response) => this.getAuthored(req, res));
+    this.router.get('/assigned', authentication, (req: Request, res: Response) => this.getAssigned(req, res));
     this.router.get('/', authentication, (req: Request, res: Response) => this.getAll(req, res));
     this.router.get('/:id', authentication, (req: Request, res: Response) => this.getOne(req, res));
 
@@ -36,17 +38,33 @@ export class TaskController {
   }
 
   async create(req: Request, res: Response) {
-    const payload = validate(CreateTaskDto, req.body);
+    const body = validate(CreateTaskDto, req.body);
 
-    const result = await this.service.create(res.locals.user.id, payload);
+    const result = await this.service.create(res.locals.user.id, body);
 
     res.json(result);
   }
 
   async getAll(req: Request, res: Response) {
-    const payload = validate(GetTaskListDto, req.query);
+    const query = validate(GetTaskListDto, req.query);
 
-    const result = await this.service.getAll(payload);
+    const result = await this.service.getAll(query);
+
+    res.json(result);
+  }
+
+  async getAuthored(req: Request, res: Response) {
+    const query = validate(PaginationDto, req.query);
+
+    const result = await this.service.getAuthored(query, res.locals.user.id);
+
+    res.json(result);
+  }
+
+  async getAssigned(req: Request, res: Response) {
+    const query = validate(PaginationDto, req.query);
+
+    const result = await this.service.getAssigned(query, res.locals.user.id);
 
     res.json(result);
   }

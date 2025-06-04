@@ -1,10 +1,17 @@
 import { injectable } from 'inversify';
+import { FindOptions, Op } from 'sequelize';
 import { TaskEntity, UserEntity } from '../../database';
 import { NotFoundException } from '../../exceptions';
+import { PaginationDto } from '../../shared';
 import { CreateTaskDto, GetTaskListDto } from './dto';
 
 @injectable()
 export class TaskService {
+  private readonly joinUsers = [
+    { model: UserEntity, as: 'author', attributes: ['id', 'name', 'email'] },
+    { model: UserEntity, as: 'assignee', attributes: ['id', 'name', 'email'] },
+  ];
+
   async create(authorId: number, dto: CreateTaskDto) {
     const assignee = await UserEntity.findOne({ where: { id: dto.assigneeId } });
     if (!assignee) {
@@ -15,11 +22,53 @@ export class TaskService {
   }
 
   async getAll(params: GetTaskListDto) {
-    const { limit, offset, sort } = params;
+    const { limit, offset, sortDirection, sortBy, search, assigneeId, authorId } = params;
+
+    const options: FindOptions<TaskEntity> = {
+      limit,
+      offset,
+      where: {
+        ...(authorId ? { authorId } : {}),
+        ...(assigneeId ? { assigneeId } : {}),
+      },
+      order: [[sortBy, sortDirection]],
+      include: [...this.joinUsers],
+    };
+
+    if (search) {
+      const value = `%${search}%`;
+      options.where = {
+        ...options.where,
+        [Op.or]: [{ title: { [Op.iLike]: value } }, { description: { [Op.iLike]: value } }],
+      };
+    }
+
+    const { rows, count } = await TaskEntity.findAndCountAll(options);
+
+    return { total: count, limit, offset, data: rows };
+  }
+
+  async getAssigned(query: PaginationDto, assigneeId: UserEntity['id']) {
+    const { limit, offset } = query;
+
     const { rows, count } = await TaskEntity.findAndCountAll({
       limit,
       offset,
-      order: [sort],
+      where: { assigneeId },
+      include: [...this.joinUsers],
+    });
+
+    return { total: count, limit, offset, data: rows };
+  }
+
+  async getAuthored(query: PaginationDto, authorId: UserEntity['id']) {
+    const { limit, offset } = query;
+
+    const { rows, count } = await TaskEntity.findAndCountAll({
+      limit,
+      offset,
+      where: { authorId },
+      include: [...this.joinUsers],
     });
 
     return { total: count, limit, offset, data: rows };
@@ -29,18 +78,7 @@ export class TaskService {
     const task = await TaskEntity.findOne({
       where: { id },
       attributes: ['id', 'title', 'description', 'severity', 'createdAt'],
-      include: [
-        {
-          model: UserEntity,
-          as: 'author',
-          attributes: ['id', 'name'],
-        },
-        {
-          model: UserEntity,
-          as: 'assignee',
-          attributes: ['id', 'name'],
-        },
-      ],
+      include: [...this.joinUsers],
     });
 
     if (!task) {

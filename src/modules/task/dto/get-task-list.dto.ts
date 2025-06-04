@@ -1,13 +1,33 @@
-import { IsEnum } from 'class-validator';
-import { PaginationDto } from '../../../shared';
+import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { PaginationDto, SortDirection } from '../../../shared';
 
-export enum TaskSortEnum {
+export enum TaskSortByEnum {
   id = 'id',
   title = 'title',
   description = 'description',
 }
 
 export class GetTaskListDto extends PaginationDto {
-  @IsEnum(TaskSortEnum)
-  sort: TaskSortEnum = TaskSortEnum.id;
+  @IsEnum(TaskSortByEnum)
+  @IsOptional()
+  sortBy: TaskSortByEnum = TaskSortByEnum.id;
+
+  @IsEnum(SortDirection)
+  @IsOptional()
+  sortDirection: TaskSortByEnum = TaskSortByEnum.title;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  assigneeId?: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  authorId?: number;
 }
