@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { TaskEntity, UserEntity } from '../../database';
-import { NotFoundException } from '../../errors';
+import { NotFoundException } from '../../exceptions';
 import { CreateTaskDto, GetTaskListDto } from './dto';
 
 @injectable()

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { NextFunction, Request, Response } from 'express';
-import { TooManyRequestsException } from '../errors';
+import { TooManyRequestsException } from '../exceptions';
 
 const limit = 10;
 const range = 'minute';

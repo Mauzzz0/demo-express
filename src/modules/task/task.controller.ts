@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { IdNumberDto } from '../../shared';
-import { validate } from '../../validation/validate';
+import { validate } from '../../validation';
 import { JwtService } from '../user/jwt.service';
 import { UserRole } from '../user/user.types';
 import { CreateTaskDto, GetTaskListDto } from './dto';

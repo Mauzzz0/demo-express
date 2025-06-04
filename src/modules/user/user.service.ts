@@ -11,7 +11,7 @@ import {
 } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
 import { UserEntity } from '../../database';
-import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
+import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../exceptions';
 import logger from '../../logger';
 import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq.queues';
 import { RabbitMqService } from '../../message-broker/rabbitmq.service';

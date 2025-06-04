@@ -24,10 +24,9 @@ export class TaskEntity extends Model {
   public description: string;
 
   @Column({
-    type: DataType.ENUM,
+    type: DataType.STRING,
     allowNull: false,
     defaultValue: TaskSeverity.medium,
-    values: Object.values(TaskSeverity),
   })
   public severity: TaskSeverity;
 

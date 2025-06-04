@@ -3,8 +3,8 @@ import 'reflect-metadata';
 import cors from 'cors';
 import express from 'express';
 import { Container } from 'inversify';
-import { logRoutes } from './bootstrap/log-routes';
-import { createRedisModule } from './cache/redis.module';
+import { logRoutes } from './bootstrap';
+import RedisModule from './cache/redis.module';
 import { appConfig } from './config';
 import { connectToPostgres } from './database';
 import logger from './logger';
@@ -30,7 +30,7 @@ const bootstrap = async () => {
     createUserModule(),
     createTaskModule(),
     createRabbitMQModule(),
-    createRedisModule(),
+    RedisModule,
     createTelegramModule(),
     createCronModule(),
     createMailModule(),

@@ -1,6 +1,6 @@
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
-import { AdminConfigDto, JwtConfigDto, PostgresConfigDto, SmtpConfigDto } from './dto';
+import { AdminConfigDto, JwtConfigDto, PostgresConfigDto, SmtpConfigDto } from './index';
 
 export enum Environment {
   prod = 'prod',

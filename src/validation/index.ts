@@ -1,9 +1,9 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { BadRequestException } from '../errors';
+import { BadRequestException } from '../exceptions';
 
-export const validate = <T extends object, V>(cls: ClassConstructor<T>, data: V): T => {
-  const instance = plainToInstance<T, V>(cls, data);
+export const validate = <T extends object, V>(dto: ClassConstructor<T>, plain: V): T => {
+  const instance = plainToInstance<T, V>(dto, plain);
   const errors = validateSync(instance);
 
   if (errors.length) {

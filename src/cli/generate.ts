@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { validate } from '../validation/validate';
+import { validate } from '../validation';
 import { GenerateCommandOptions } from './dto';
 import { words } from './mock-values';
 import { getRandomItems } from './utils';

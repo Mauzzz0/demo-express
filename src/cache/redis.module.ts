@@ -1,10 +1,8 @@
 import { Container } from 'inversify';
 import { RedisService } from './redis.service';
 
-export const createRedisModule = () => {
-  const container = new Container();
+const RedisModule = new Container();
 
-  container.bind<RedisService>(RedisService).toSelf().inSingletonScope();
+RedisModule.bind<RedisService>(RedisService).toSelf().inSingletonScope();
 
-  return container;
-};
+export default RedisModule;

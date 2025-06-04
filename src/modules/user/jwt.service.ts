@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { appConfig } from '../../config';
 import { UserEntity } from '../../database';
-import { BadRequestException } from '../../errors';
+import { BadRequestException } from '../../exceptions';
 import { TokenPair } from './jwt.types';
 
 @injectable()
@@ -18,23 +18,20 @@ export class JwtService {
   }
 
   verify(token: string, type: 'access' | 'refresh'): boolean {
-    let result = false;
-    const { accessSecret, refreshSecret } = appConfig.jwt;
-
     const secrets = {
-      access: accessSecret,
-      refresh: refreshSecret,
+      access: appConfig.jwt.accessSecret,
+      refresh: appConfig.jwt.refreshSecret,
     };
 
-    // <-- @Todo: Проверить если тут кидает ошибку то можно try catch
-    jwt.verify(token, secrets[type], (err) => {
-      result = !err;
-    });
-
-    return result;
+    try {
+      jwt.verify(token, secrets[type]);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
-  decode(token: string) {
+  decode(token: string): JwtPayload {
     const decoded = jwt.decode(token, { json: true });
 
     if (!decoded) {

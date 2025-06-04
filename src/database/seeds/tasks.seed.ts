@@ -1,5 +1,5 @@
 import { appConfig } from '../../config';
-import { Environment } from '../../config/app-config.dto';
+import { Environment } from '../../config/dto/app-config.dto';
 import logger from '../../logger';
 import { TaskEntity, UserEntity } from '../entities';
 

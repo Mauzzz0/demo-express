@@ -1,6 +1,6 @@
 import { config as readEnv } from 'dotenv';
-import { validate } from '../validation/validate';
-import { AppConfigDto } from './app-config.dto';
+import { validate } from '../validation';
+import { AppConfigDto } from './dto';
 
 readEnv();
 
