@@ -5,12 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "clear && cross-env NODE_ENV=dev ts-node src/main.ts",
-    "start:prod": "cross-env NODE_ENV=prod ts-node src/main.ts",
-    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",
-    "start:watch": "nodemon src/main.ts",
-    "generate": "ts-node src/cli/generate.ts",
-    "sandbox": "ts-node sandbox/main.ts"
+    "start": "ts-node src/main.ts",
+    "start:prod": "node ./dist/main.js",
+    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0"
   },
   "prettier": {
     "singleQuote": true,
@@ -28,7 +25,7 @@
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.8",
     "axios": "^1.9.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cors": "^2.8.5",
@@ -41,16 +38,16 @@
     "inversify": "^6.2.2",
     "jsonwebtoken": "^9.0.2",
     "nanoid": "^3.3.11",
-    "nodemailer": "^6.10.0",
+    "nodemailer": "^7.0.3",
     "pg": "^8.16.0",
     "pino": "^9.7.0",
-    "redis": "^4.7.0",
+    "redis": "^5.5.5",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6",
     "swagger-ui-express": "^5.0.1",
     "telegraf": "^4.16.3",
-    "uuid": "^10.0.0",
+    "uuid": "^11.1.0",
     "yaml": "^2.8.0"
   },
   "devDependencies": {
