@@ -101,7 +101,7 @@ export class UserService {
   }
 
   async login(dto: LoginDto) {
-    const user = await UserEntity.findOne({ where: { nick: dto.nick } });
+    const user = await UserEntity.findOne({ where: { email: dto.email } });
 
     if (!user || !(await compare(dto.password, user.password))) {
       throw new UnauthorizedException('User does not exists or password is wrong');
@@ -130,7 +130,7 @@ export class UserService {
 
     const created = await UserEntity.create({
       email: dto.email,
-      nick: dto.nick,
+      name: dto.name,
       password: dto.password,
     });
 

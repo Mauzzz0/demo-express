@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { UserRole } from '../../database/entities';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id-number.dto';
 import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
 import { JwtService } from '../user/jwt.service';
+import { UserRole } from '../user/user.types';
 import { CreateTaskDto, GetTaskListDto } from './task.dto';
 import { TaskService } from './task.service';
 

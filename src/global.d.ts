@@ -1,12 +1,9 @@
-import { UserRole } from './database/entities';
+import { UserEntity } from './database';
 
 declare global {
   namespace Express {
     interface Locals {
-      user: {
-        id: number;
-        role: UserRole;
-      };
+      user: UserEntity;
     }
   }
 }

@@ -15,7 +15,6 @@ const rawConfig: EnvStructure<AppConfigDto> = {
   redisUrl: process.env.REDIS_URL,
   telegramToken: process.env.TELEGRAM_TOKEN,
   admin: {
-    nick: process.env.ADMIN_NICK,
     password: process.env.ADMIN_PASSWORD,
     email: process.env.ADMIN_EMAIL,
   },

@@ -37,7 +37,7 @@ export class TelegramService {
             user.telegram = ctx.update.message.from.id;
             await user.save();
 
-            return await ctx.reply(`Welcome, ${user.nick}`);
+            return await ctx.reply(`Welcome, ${user.name}`);
           }
         }
       }

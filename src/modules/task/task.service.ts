@@ -33,12 +33,12 @@ export class TaskService {
         {
           model: UserEntity,
           as: 'author',
-          attributes: ['id', 'nick'],
+          attributes: ['id', 'name'],
         },
         {
           model: UserEntity,
           as: 'assignee',
-          attributes: ['id', 'nick'],
+          attributes: ['id', 'name'],
         },
       ],
     });

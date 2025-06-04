@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { redisTempMailKey } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
-import { UserRole } from '../../database/entities';
 import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
@@ -14,6 +13,7 @@ import { validate } from '../../validation/validate';
 import { JwtService } from './jwt.service';
 import { ChangePasswordDto, LoginDto, RegisterDto, RestorePasswordDto, TokenDto } from './user.dto';
 import { UserService } from './user.service';
+import { UserRole } from './user.types';
 
 @injectable()
 export class UserController extends BaseController {

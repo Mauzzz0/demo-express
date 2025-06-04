@@ -5,7 +5,7 @@ import { TaskEntity, UserEntity } from '../entities';
 
 export const tasksSeed = async () => {
   if (appConfig.env === Environment.dev) {
-    const admin = await UserEntity.findOne({ where: { nick: appConfig.admin.nick } });
+    const admin = await UserEntity.findOne({ where: { email: appConfig.admin.email } });
 
     if (admin) {
       const tasks: Partial<TaskEntity>[] = [

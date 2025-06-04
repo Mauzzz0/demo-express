@@ -1,10 +1,6 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { UserRole } from '../../modules/user/user.types';
 import { TaskEntity } from './task.entity';
-
-export enum UserRole {
-  user = 'user',
-  admin = 'admin',
-}
 
 @Table({ tableName: 'users' })
 export class UserEntity extends Model {
@@ -16,8 +12,8 @@ export class UserEntity extends Model {
   })
   public id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false, unique: false })
-  public nick: string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  public name: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
   public email: string;
@@ -26,10 +22,9 @@ export class UserEntity extends Model {
   public telegram: number;
 
   @Column({
-    type: DataType.ENUM,
-    allowNull: true,
+    type: DataType.STRING,
+    allowNull: false,
     defaultValue: UserRole.user,
-    values: Object.values(UserRole),
   })
   public role: UserRole;
 
