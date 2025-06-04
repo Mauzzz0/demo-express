@@ -1,30 +1,20 @@
 import { SetOptions } from '@redis/client';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { createClient } from 'redis';
-import { ConfigService } from '../../config/config.service';
-import logger from '../../logger/pino.logger';
+import { appConfig } from '../config';
 
 @injectable()
 export class RedisService {
-  private redis: ReturnType<typeof createClient>;
+  private readonly redis = createClient({
+    url: `redis://${appConfig.redis.username}:${appConfig.redis.password}@${appConfig.redis.host}:${appConfig.redis.port}/${appConfig.redis.database}`,
+  });
 
-  constructor(
-    @inject(ConfigService)
-    private readonly config: ConfigService,
-  ) {}
+  constructor() {
+    this.connect();
+  }
 
   async connect() {
-    if (this.redis) return;
-
-    const client = createClient({ url: this.config.redisConnectionString });
-    try {
-      await client.connect();
-    } catch (error) {
-      logger.error("Can't connect to redis:");
-      throw error;
-    }
-
-    this.redis = client;
+    await this.redis.connect();
   }
 
   async set(key: string, value: Record<string, any>, options?: SetOptions) {

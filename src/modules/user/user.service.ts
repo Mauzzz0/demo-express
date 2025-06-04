@@ -1,10 +1,9 @@
-import { compareSync, hashSync } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { inject, injectable } from 'inversify';
 import { v4 } from 'uuid';
-import { ConfigService } from '../../config/config.service';
-import { UserModel } from '../../database/models';
-import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../database/redis/redis.keys';
-import { RedisService } from '../../database/redis/redis.service';
+import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../cache/redis.keys';
+import { RedisService } from '../../cache/redis.service';
+import { UserEntity } from '../../database';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
 import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq/rabbitmq.queues';
 import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service';
@@ -18,7 +17,6 @@ import { ChangePasswordDto, LoginDto, RegisterDto } from './user.dto';
 export class UserService {
   constructor(
     @inject(JwtService) private readonly jwtService: JwtService,
-    @inject(ConfigService) private readonly config: ConfigService,
     @inject(MailService) private readonly mail: MailService,
     @inject(RedisService) private readonly redis: RedisService,
     @inject(TelegramService) private readonly telegram: TelegramService,
@@ -30,8 +28,8 @@ export class UserService {
     return this.redis.set(redisRefreshTokenKey(token), { userId }, { EX: secondsInDay });
   }
 
-  async passwordRestore(email: UserModel['email']) {
-    const user = await UserModel.findOne({ where: { email } });
+  async passwordRestore(email: UserEntity['email']) {
+    const user = await UserEntity.findOne({ where: { email } });
     if (!user) {
       return true;
     }
@@ -58,7 +56,7 @@ export class UserService {
   async passwordChange(dto: ChangePasswordDto) {
     const { email, restoreKey, password } = dto;
 
-    const user = await UserModel.findOne({ where: { email } });
+    const user = await UserEntity.findOne({ where: { email } });
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -68,7 +66,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    user.password = hashSync(password, this.config.env.jwt.salt);
+    user.password = await this.hashPassword(dto.password);
     await user.save();
 
     await this.redis.delete(redisRestorePasswordKey(user.id));
@@ -76,8 +74,8 @@ export class UserService {
     return true;
   }
 
-  async profile(id: UserModel['id']) {
-    const user = await UserModel.findByPk(id);
+  async profile(id: UserEntity['id']) {
+    const user = await UserEntity.findByPk(id, { attributes: { exclude: ['password'] } });
 
     if (!user) {
       throw new NotFoundException();
@@ -86,7 +84,7 @@ export class UserService {
     return user;
   }
 
-  async blockOrUnblockUser(id: UserModel['id'], active: UserModel['active']) {
+  async blockOrUnblockUser(id: UserEntity['id'], active: UserEntity['active']) {
     const user = await this.profile(id);
     user.active = active;
 
@@ -97,16 +95,16 @@ export class UserService {
 
   async getAll(params: PaginationDto) {
     const { limit, offset } = params;
-    const { rows, count } = await UserModel.findAndCountAll({ limit, offset });
+    const { rows, count } = await UserEntity.findAndCountAll({ limit, offset });
 
     return { total: count, limit, offset, data: rows };
   }
 
   async login(dto: LoginDto) {
-    const user = await UserModel.findOne({ where: { nick: dto.nick } });
+    const user = await UserEntity.findOne({ where: { nick: dto.nick } });
 
-    if (!user || !compareSync(dto.password, user.password)) {
-      throw new UnauthorizedException('Password is not correct or nick is bad');
+    if (!user || !(await compare(dto.password, user.password))) {
+      throw new UnauthorizedException('User does not exists or password is wrong');
     }
 
     if (!user.active) {
@@ -120,7 +118,7 @@ export class UserService {
   }
 
   async register(dto: RegisterDto) {
-    const userWithSameEmail = await UserModel.findOne({
+    const userWithSameEmail = await UserEntity.findOne({
       where: { email: dto.email },
     });
 
@@ -128,9 +126,9 @@ export class UserService {
       throw new BadRequestException('User with this email already exists');
     }
 
-    dto.password = hashSync(dto.password, this.config.env.jwt.salt);
+    dto.password = await this.hashPassword(dto.password);
 
-    await UserModel.create({
+    const created = await UserEntity.create({
       email: dto.email,
       nick: dto.nick,
       password: dto.password,
@@ -138,7 +136,7 @@ export class UserService {
 
     await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, JSON.stringify(dto));
 
-    return true;
+    return this.profile(created.id);
   }
 
   async logout(refreshToken: string) {
@@ -165,5 +163,9 @@ export class UserService {
     await this.setNewRefreshToken(user.id, pair.refreshToken);
 
     return pair;
+  }
+
+  private async hashPassword(raw: string): Promise<string> {
+    return hash(raw, 10);
   }
 }

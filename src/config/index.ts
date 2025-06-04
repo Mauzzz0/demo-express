@@ -1,10 +1,14 @@
-import { ConfigDto } from './config.dto';
+import { config as readEnv } from 'dotenv';
+import { validate } from '../validation/validate';
+import { AppConfigDto } from './app-config.dto';
 
-export type EnvStructure<T = any> = {
+readEnv();
+
+type EnvStructure<T = any> = {
   [key in keyof T]: T[key] extends object ? EnvStructure<T[key]> : string | undefined;
 };
 
-const config = (): EnvStructure<ConfigDto> => ({
+const rawConfig: EnvStructure<AppConfigDto> = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
   rabbitUri: process.env.RABBIT_URI,
@@ -19,7 +23,6 @@ const config = (): EnvStructure<ConfigDto> => ({
     pass: process.env.SMTP_PASS,
   },
   jwt: {
-    salt: process.env.SALT,
     accessSecret: process.env.JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,
   },
@@ -37,6 +40,6 @@ const config = (): EnvStructure<ConfigDto> => ({
     password: process.env.REDIS_PASSWORD,
     port: process.env.REDIS_PORT,
   },
-});
+};
 
-export default config;
+export const appConfig = validate(AppConfigDto, rawConfig);

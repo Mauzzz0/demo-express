@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TaskSeverity } from '../../database/models';
+import { TaskSeverity } from '../../database/entities';
 import { PaginationDto } from '../../shared/pagination.dto';
 
 export class CreateTaskDto {

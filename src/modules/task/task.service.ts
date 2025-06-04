@@ -1,22 +1,22 @@
 import { injectable } from 'inversify';
-import { TaskModel, UserModel } from '../../database/models';
+import { TaskEntity, UserEntity } from '../../database/entities';
 import { NotFoundException } from '../../errors';
 import { CreateTaskDto, GetTaskListDto } from './task.dto';
 
 @injectable()
 export class TaskService {
   async create(authorId: number, dto: CreateTaskDto) {
-    const assignee = await UserModel.findOne({ where: { id: dto.assigneeId } });
+    const assignee = await UserEntity.findOne({ where: { id: dto.assigneeId } });
     if (!assignee) {
       throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
     }
 
-    return TaskModel.create({ ...dto, authorId });
+    return TaskEntity.create({ ...dto, authorId });
   }
 
   async getAll(params: GetTaskListDto) {
     const { limit, offset, sort } = params;
-    const { rows, count } = await TaskModel.findAndCountAll({
+    const { rows, count } = await TaskEntity.findAndCountAll({
       limit,
       offset,
       order: [sort],
@@ -25,18 +25,18 @@ export class TaskService {
     return { total: count, limit, offset, data: rows };
   }
 
-  async getOne(id: TaskModel['id']) {
-    const task = await TaskModel.findOne({
+  async getOne(id: TaskEntity['id']) {
+    const task = await TaskEntity.findOne({
       where: { id },
       attributes: ['id', 'title', 'description', 'severity', 'createdAt'],
       include: [
         {
-          model: UserModel,
+          model: UserEntity,
           as: 'author',
           attributes: ['id', 'nick'],
         },
         {
-          model: UserModel,
+          model: UserEntity,
           as: 'assignee',
           attributes: ['id', 'nick'],
         },
@@ -50,19 +50,19 @@ export class TaskService {
     return task;
   }
 
-  async deleteOne(id: TaskModel['id']) {
+  async deleteOne(id: TaskEntity['id']) {
     await this.getOne(id);
 
-    return TaskModel.destroy({ where: { id } });
+    return TaskEntity.destroy({ where: { id } });
   }
 
-  async update(id: TaskModel['id'], dto: CreateTaskDto) {
+  async update(id: TaskEntity['id'], dto: CreateTaskDto) {
     await this.getOne(id);
-    const assignee = await UserModel.findOne({ where: { id: dto.assigneeId } });
+    const assignee = await UserEntity.findOne({ where: { id: dto.assigneeId } });
     if (!assignee) {
       throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
     }
 
-    return TaskModel.update(dto, { where: { id }, returning: true });
+    return TaskEntity.update(dto, { where: { id }, returning: true });
   }
 }

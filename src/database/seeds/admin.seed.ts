@@ -1,21 +1,21 @@
 import { hashSync } from 'bcrypt';
-import { Environment } from '../../config/config.dto';
-import { ConfigService } from '../../config/config.service';
+import { appConfig } from '../../config';
+import { Environment } from '../../config/app-config.dto';
 import logger from '../../logger/pino.logger';
-import { UserModel, UserRole } from '../models';
+import { UserEntity, UserRole } from '../entities';
 
-export const adminSeed = async (config: ConfigService) => {
-  if (config.env.env === Environment.dev) {
+export const adminSeed = async () => {
+  if (appConfig.env === Environment.dev) {
     const admin = {
-      nick: config.env.admin.nick,
-      email: config.env.admin.email,
+      nick: appConfig.admin.nick,
+      email: appConfig.admin.email,
       role: UserRole.admin,
-      password: hashSync(config.env.admin.password, config.env.jwt.salt),
+      password: hashSync(appConfig.admin.password, 10),
     };
 
-    const exists = await UserModel.findOne({ where: { nick: admin.nick } });
+    const exists = await UserEntity.findOne({ where: { nick: admin.nick } });
     if (!exists) {
-      await UserModel.create(admin);
+      await UserEntity.create(admin);
       logger.info('Successfully seeded default admin');
     }
   }

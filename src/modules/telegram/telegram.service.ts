@@ -1,18 +1,14 @@
 import { inject, injectable } from 'inversify';
 import { Telegraf } from 'telegraf';
-import { ConfigService } from '../../config/config.service';
-import { UserModel } from '../../database/models';
-import { redisTelegramKey } from '../../database/redis/redis.keys';
-import { RedisService } from '../../database/redis/redis.service';
+import { redisTelegramKey } from '../../cache/redis.keys';
+import { RedisService } from '../../cache/redis.service';
+import { UserEntity } from '../../database';
 
 @injectable()
 export class TelegramService {
   readonly bot: Telegraf;
 
-  constructor(
-    @inject(ConfigService) private readonly config: ConfigService,
-    @inject(RedisService) private readonly redis: RedisService,
-  ) {
+  constructor(@inject(RedisService) private readonly redis: RedisService) {
     // this.bot = new Telegraf(this.config.env.telegramToken);
   }
 
@@ -36,7 +32,7 @@ export class TelegramService {
       if (payload) {
         const res = await this.redis.get(redisTelegramKey(payload));
         if (res?.userId) {
-          const user = await UserModel.findOne({ where: { id: res.userId } });
+          const user = await UserEntity.findOne({ where: { id: res.userId } });
           if (user) {
             user.telegram = ctx.update.message.from.id;
             await user.save();

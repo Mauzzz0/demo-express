@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRole } from '../database/models';
+import { UserRole } from '../database/entities';
 import { ForbiddenException } from '../errors';
 
 export const RoleGuard = (requiredRole: UserRole) => (req: Request, res: Response, next: NextFunction) => {

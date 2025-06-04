@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { UserRole } from '../../database/models';
+import { UserRole } from '../../database/entities';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';
 import { IdNumberDto } from '../../shared/id-number.dto';

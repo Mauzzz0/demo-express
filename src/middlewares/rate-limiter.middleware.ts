@@ -10,7 +10,7 @@ const storage = {
   lastTime: dayjs().startOf(range),
 };
 
-export const rateLimiter = (req: Request, res: Response, next: NextFunction) => {
+export const RateLimiter = (req: Request, res: Response, next: NextFunction) => {
   const currentPeriod = dayjs().startOf(range);
   const lastRequestWasInCurrentPeriod = currentPeriod.isSame(storage.lastTime);
 

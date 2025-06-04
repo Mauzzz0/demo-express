@@ -1,5 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { TaskModel } from './task.model';
+import { TaskEntity } from './task.entity';
 
 export enum UserRole {
   user = 'user',
@@ -7,7 +7,7 @@ export enum UserRole {
 }
 
 @Table({ tableName: 'users' })
-export class UserModel extends Model {
+export class UserEntity extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -43,15 +43,15 @@ export class UserModel extends Model {
   @Column({ type: DataType.STRING, allowNull: true })
   public password: string;
 
-  @HasMany(() => TaskModel, {
+  @HasMany(() => TaskEntity, {
     as: 'authoredTasks',
     foreignKey: 'authorId',
   })
-  public authoredTasks: TaskModel[];
+  public authoredTasks: TaskEntity[];
 
-  @HasMany(() => TaskModel, {
+  @HasMany(() => TaskEntity, {
     as: 'assignedTasks',
     foreignKey: 'assigneeId',
   })
-  public assignedTasks: TaskModel[];
+  public assignedTasks: TaskEntity[];
 }

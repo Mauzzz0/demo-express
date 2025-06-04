@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { UserRole } from '../../database/models';
-import { redisTempMailKey } from '../../database/redis/redis.keys';
-import { RedisService } from '../../database/redis/redis.service';
+import { redisTempMailKey } from '../../cache/redis.keys';
+import { RedisService } from '../../cache/redis.service';
+import { UserRole } from '../../database/entities';
 import { BadRequestException } from '../../errors';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { BaseController } from '../../shared/base.controller';

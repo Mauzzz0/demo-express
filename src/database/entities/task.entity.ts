@@ -1,5 +1,5 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
-import { UserModel } from './user.model';
+import { UserEntity } from './user.entity';
 
 export enum TaskSeverity {
   low = 'low',
@@ -8,7 +8,7 @@ export enum TaskSeverity {
 }
 
 @Table({ tableName: 'tasks' })
-export class TaskModel extends Model {
+export class TaskEntity extends Model {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -31,31 +31,31 @@ export class TaskModel extends Model {
   })
   public severity: TaskSeverity;
 
-  @ForeignKey(() => UserModel)
+  @ForeignKey(() => UserEntity)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   public authorId: number;
 
-  @BelongsTo(() => UserModel, {
+  @BelongsTo(() => UserEntity, {
     as: 'author',
     foreignKey: 'authorId',
     onDelete: 'CASCADE',
   })
-  public author: UserModel;
+  public author: UserEntity;
 
-  @ForeignKey(() => UserModel)
+  @ForeignKey(() => UserEntity)
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
   public assigneeId: number;
 
-  @BelongsTo(() => UserModel, {
+  @BelongsTo(() => UserEntity, {
     as: 'assignee',
     foreignKey: 'assigneeId',
     onDelete: 'CASCADE',
   })
-  public assignee: UserModel;
+  public assignee: UserEntity;
 }

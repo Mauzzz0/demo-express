@@ -1,20 +1,15 @@
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
-import { ConfigService } from '../../config/config.service';
-import { UserModel } from '../../database/models';
+import { appConfig } from '../../config';
+import { UserEntity } from '../../database';
 import { BadRequestException } from '../../errors';
 import { TokenPair } from './jwt.types';
 
 @injectable()
 export class JwtService {
-  constructor(
-    @inject(ConfigService)
-    private readonly config: ConfigService,
-  ) {}
-
-  makeTokenPair(user: UserModel): TokenPair {
+  makeTokenPair(user: UserEntity): TokenPair {
     const payload = { id: user.id };
-    const { accessSecret, refreshSecret } = this.config.env.jwt;
+    const { accessSecret, refreshSecret } = appConfig.jwt;
 
     const accessToken = jwt.sign(payload, accessSecret, { expiresIn: '1h' });
     const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '1w' });
@@ -24,13 +19,14 @@ export class JwtService {
 
   verify(token: string, type: 'access' | 'refresh'): boolean {
     let result = false;
-    const { accessSecret, refreshSecret } = this.config.env.jwt;
+    const { accessSecret, refreshSecret } = appConfig.jwt;
 
     const secrets = {
       access: accessSecret,
       refresh: refreshSecret,
     };
 
+    // <-- @Todo: Проверить если тут кидает ошибку то можно try catch
     jwt.verify(token, secrets[type], (err) => {
       result = !err;
     });

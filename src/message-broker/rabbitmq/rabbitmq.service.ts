@@ -1,15 +1,13 @@
-import { ChannelWrapper, connect } from 'amqp-connection-manager';
-import { inject, injectable } from 'inversify';
-import { ConfigService } from '../../config/config.service';
+import { connect } from 'amqp-connection-manager';
+import { injectable } from 'inversify';
+import { appConfig } from '../../config';
 import { RABBIT_MQ_QUEUES } from './rabbitmq.queues';
 
 @injectable()
 export class RabbitMqService {
-  public readonly channel: ChannelWrapper;
+  public readonly channel = connect(appConfig.rabbitUri).createChannel();
 
-  constructor(@inject(ConfigService) private readonly configService: ConfigService) {
-    this.channel = connect(this.configService.env.rabbitUri).createChannel();
-
+  constructor() {
     this.init();
   }
 

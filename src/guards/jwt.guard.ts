@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserModel } from '../database/models';
+import { UserEntity } from '../database/entities';
 import { UnauthorizedException } from '../errors';
 import { JwtService } from '../modules/user/jwt.service';
 
@@ -24,7 +24,7 @@ export const JwtGuard = (jwtService: JwtService) => async (req: Request, res: Re
 
   const payload = jwtService.decode(token);
 
-  const user = await UserModel.findOne({ where: { id: payload?.id } });
+  const user = await UserEntity.findOne({ where: { id: payload?.id } });
   if (!user || !user.active) {
     throw new UnauthorizedException();
   }

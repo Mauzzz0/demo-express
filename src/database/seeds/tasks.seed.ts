@@ -1,14 +1,14 @@
-import { Environment } from '../../config/config.dto';
-import { ConfigService } from '../../config/config.service';
+import { appConfig } from '../../config';
+import { Environment } from '../../config/app-config.dto';
 import logger from '../../logger/pino.logger';
-import { TaskModel, UserModel } from '../models';
+import { TaskEntity, UserEntity } from '../entities';
 
-export const tasksSeed = async (config: ConfigService) => {
-  if (config.env.env === Environment.dev) {
-    const admin = await UserModel.findOne({ where: { nick: config.env.admin.nick } });
+export const tasksSeed = async () => {
+  if (appConfig.env === Environment.dev) {
+    const admin = await UserEntity.findOne({ where: { nick: appConfig.admin.nick } });
 
     if (admin) {
-      const tasks: Partial<TaskModel>[] = [
+      const tasks: Partial<TaskEntity>[] = [
         { title: 'Задача-1', description: 'Задача, созданная админом', authorId: admin.id },
         {
           title: 'Задача-2',
@@ -19,9 +19,9 @@ export const tasksSeed = async (config: ConfigService) => {
       ];
 
       for (const task of tasks) {
-        const exists = await TaskModel.findOne({ where: task });
+        const exists = await TaskEntity.findOne({ where: task });
         if (!exists) {
-          await TaskModel.create(task);
+          await TaskEntity.create(task);
 
           logger.info(`Successfully seeded '${task.title}' task to default admin`);
         }

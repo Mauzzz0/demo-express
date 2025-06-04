@@ -5,6 +5,7 @@ import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service'
 
 @injectable()
 export class TelegramRabbitController {
+  // <-- @Todo: User amqp controller
   constructor(
     @inject(RabbitMqService)
     private readonly rabbitMqService: RabbitMqService,

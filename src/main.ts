@@ -1,23 +1,32 @@
 import 'express-async-errors';
 import 'reflect-metadata';
+import cors from 'cors';
+import express from 'express';
 import { Container } from 'inversify';
-import { createRedisModule } from './database/redis/redis.module';
-import { RedisService } from './database/redis/redis.service';
+import { logRoutes } from './bootstrap/log-routes';
+import { createRedisModule } from './cache/redis.module';
+import { appConfig } from './config';
+import { connectToPostgres } from './database';
+import logger from './logger/pino.logger';
 import { createRabbitMQModule } from './message-broker/rabbitmq/rabbitmq.module';
-import { App } from './modules/app/app';
-import { createAppModule } from './modules/app/app.module';
+import { ErrorHandler, LogMiddleware, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
 import { createCronModule } from './modules/cron/cron.module';
 import { CronService } from './modules/cron/cron.service';
 import { createMailModule } from './modules/mail/mail.module';
+import { TaskController } from './modules/task/task.controller';
 import { createTaskModule } from './modules/task/task.module';
 import { createTelegramModule } from './modules/telegram/telegram.module';
 import { TelegramRabbitController } from './modules/telegram/telegram.rabbit-controller';
 import { TelegramService } from './modules/telegram/telegram.service';
+import { UserController } from './modules/user/user.controller';
 import { createUserModule } from './modules/user/user.module';
+import { setupSwagger } from './swagger/setup-swagger';
 
 const bootstrap = async () => {
+  // * * * * * * * * * * * * * * * *
+  // DI Container
+  // * * * * * * * * * * * * * * * *
   const app = Container.merge(
-    createAppModule(),
     createUserModule(),
     createTaskModule(),
     createRabbitMQModule(),
@@ -27,10 +36,54 @@ const bootstrap = async () => {
     createMailModule(),
   );
 
+  // * * * * * * * * * * * * * * * *
+  // Establish connection to PostgreSQL
+  // * * * * * * * * * * * * * * * *
+  await connectToPostgres();
+
+  // * * * * * * * * * * * * * * * *
+  // Create HTTP Express Server
+  // * * * * * * * * * * * * * * * *
+  const server = express();
+
+  // * * * * * * * * * * * * * * * *
+  // Middlewares
+  // * * * * * * * * * * * * * * * *
+  server.use(RateLimiter);
+  server.use(SessionMiddleware);
+  server.use(ViewsMiddleware);
+  server.use(express.json());
+  server.use(LogMiddleware);
+  server.use(cors({ origin: '*' }));
+
+  // * * * * * * * * * * * * * * * *
+  // HTTP Controllers
+  // * * * * * * * * * * * * * * * *
+  const userController = app.get(UserController);
+  const taskController = app.get(TaskController);
+
+  server.use('/user', userController.router);
+  server.use('/task', taskController.router);
+
+  // * * * * * * * * * * * * * * * *
+  // Error Handlers
+  // * * * * * * * * * * * * * * * *
+  server.use(ErrorHandler);
+
+  // * * * * * * * * * * * * * * * *
+  // AMQP Controllers
+  // * * * * * * * * * * * * * * * *
   app.get(TelegramRabbitController);
 
-  const redis = app.get<RedisService>(RedisService);
-  await redis.connect();
+  // * * * * * * * * * * * * * * * *
+  // Configure Swagger
+  // * * * * * * * * * * * * * * * *
+  setupSwagger(server);
+
+  // * * * * * * * * * * * * * * * *
+  // Log Registered Routes
+  // * * * * * * * * * * * * * * * *
+  logRoutes(server);
 
   const telegram = app.get<TelegramService>(TelegramService);
   await telegram.start();
@@ -38,8 +91,12 @@ const bootstrap = async () => {
   const cron = app.get<CronService>(CronService);
   cron.startJobs();
 
-  const server = app.get<App>(App);
-  await server.init();
+  // * * * * * * * * * * * * * * * *
+  // Start Listening for Incoming HTTP Requests on Specified Port
+  // * * * * * * * * * * * * * * * *
+  server.listen(appConfig.port, () => {
+    logger.info(`Server is started on port ${appConfig.port}...`);
+  });
 };
 
 bootstrap();

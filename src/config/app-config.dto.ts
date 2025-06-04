@@ -7,7 +7,7 @@ export enum Environment {
   dev = 'dev',
 }
 
-export class ConfigDto {
+export class AppConfigDto {
   @IsEnum(Environment)
   env: Environment;
 
