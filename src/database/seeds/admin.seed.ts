@@ -2,7 +2,7 @@ import { hashSync } from 'bcrypt';
 import { CreationAttributes } from 'sequelize';
 import { appConfig } from '../../config';
 import { Environment } from '../../config/app-config.dto';
-import logger from '../../logger/pino.logger';
+import logger from '../../logger';
 import { UserRole } from '../../modules/user/user.types';
 import { UserEntity } from '../entities';
 

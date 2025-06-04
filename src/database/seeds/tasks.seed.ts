@@ -1,6 +1,6 @@
 import { appConfig } from '../../config';
 import { Environment } from '../../config/app-config.dto';
-import logger from '../../logger/pino.logger';
+import logger from '../../logger';
 import { TaskEntity, UserEntity } from '../entities';
 
 export const tasksSeed = async () => {

@@ -1,13 +1,21 @@
+import axios from 'axios';
 import { compare, hash } from 'bcrypt';
+import { CronJob } from 'cron';
 import { inject, injectable } from 'inversify';
 import { v4 } from 'uuid';
-import { redisRefreshTokenKey, redisRestorePasswordKey, redisTelegramKey } from '../../cache/redis.keys';
+import {
+  redisRefreshTokenKey,
+  redisRestorePasswordKey,
+  redisTelegramKey,
+  redisTempMailKey,
+} from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
 import { UserEntity } from '../../database';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../errors';
-import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq/rabbitmq.queues';
-import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service';
-import { PaginationDto } from '../../shared/pagination.dto';
+import logger from '../../logger';
+import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq.queues';
+import { RabbitMqService } from '../../message-broker/rabbitmq.service';
+import { PaginationDto, TimeInSeconds } from '../../shared';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { JwtService } from './jwt.service';
@@ -15,17 +23,48 @@ import { ChangePasswordDto, LoginDto, RegisterDto } from './user.dto';
 
 @injectable()
 export class UserService {
+  private readonly refreshTempDomainsJob = new CronJob('0 */6 * * *', () => this.loadTmpDomains(), null, true);
+
   constructor(
-    @inject(JwtService) private readonly jwtService: JwtService,
     @inject(MailService) private readonly mail: MailService,
     @inject(RedisService) private readonly redis: RedisService,
+    @inject(JwtService) private readonly jwtService: JwtService,
+    @inject(RedisService) private readonly redisService: RedisService,
     @inject(TelegramService) private readonly telegram: TelegramService,
     @inject(RabbitMqService) private readonly rabbitMqService: RabbitMqService,
-  ) {}
+  ) {
+    this.loadTmpDomains();
+  }
+
+  private async loadTmpDomains() {
+    try {
+      const url = 'https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt';
+
+      const { data } = await axios.get<string>(url);
+      const domains = data.split('\n');
+
+      await Promise.all(
+        domains.map((email) =>
+          this.redisService.set(
+            redisTempMailKey(email),
+            { email },
+            { expiration: { type: 'EX', value: TimeInSeconds.day } },
+          ),
+        ),
+      );
+      logger.info(`Successfully load ${domains.length} temporary email domains`);
+    } catch (error) {
+      logger.error("Can't update temp domains ");
+      logger.error(error);
+    }
+  }
 
   private async setNewRefreshToken(userId: number, token: string) {
-    const secondsInDay = 60 * 60 * 24;
-    return this.redis.set(redisRefreshTokenKey(token), { userId }, { EX: secondsInDay });
+    return this.redis.set(
+      redisRefreshTokenKey(token),
+      { userId },
+      { expiration: { type: 'EX', value: TimeInSeconds.day } },
+    );
   }
 
   async passwordRestore(email: UserEntity['email']) {
@@ -36,7 +75,11 @@ export class UserService {
 
     const restoreKey = v4();
 
-    await this.redis.set(redisRestorePasswordKey(user.id), { restoreKey }, { EX: 3600 });
+    await this.redis.set(
+      redisRestorePasswordKey(user.id),
+      { restoreKey },
+      { expiration: { type: 'EX', value: TimeInSeconds.hour } },
+    );
     await this.mail.sendRestoreMessage(user.email, restoreKey);
 
     return true;
@@ -44,7 +87,7 @@ export class UserService {
 
   async getTelegramLink(userId: number) {
     const key = v4();
-    await this.redis.set(redisTelegramKey(key), { userId }, { EX: 3600 });
+    await this.redis.set(redisTelegramKey(key), { userId }, { expiration: { type: 'EX', value: TimeInSeconds.hour } });
 
     const { username } = await this.telegram.bot.telegram.getMe();
 
@@ -66,7 +109,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    user.password = await this.hashPassword(dto.password);
+    user.password = await this.hashPassword(password);
     await user.save();
 
     await this.redis.delete(redisRestorePasswordKey(user.id));
@@ -118,10 +161,14 @@ export class UserService {
   }
 
   async register(dto: RegisterDto) {
+    const isTempDomain = await this.redisService.get(redisTempMailKey(dto.email.split('@')[1] ?? ''));
+    if (isTempDomain) {
+      throw new BadRequestException('Registration on temporary email domain is now allowed');
+    }
+
     const userWithSameEmail = await UserEntity.findOne({
       where: { email: dto.email },
     });
-
     if (userWithSameEmail) {
       throw new BadRequestException('User with this email already exists');
     }

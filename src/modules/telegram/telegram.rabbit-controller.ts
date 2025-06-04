@@ -1,7 +1,7 @@
 import { ConsumeMessage } from 'amqplib';
 import { inject, injectable } from 'inversify';
-import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq/rabbitmq.queues';
-import { RabbitMqService } from '../../message-broker/rabbitmq/rabbitmq.service';
+import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq.queues';
+import { RabbitMqService } from '../../message-broker/rabbitmq.service';
 
 @injectable()
 export class TelegramRabbitController {

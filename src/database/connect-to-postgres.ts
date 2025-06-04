@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import { appConfig } from '../config';
-import logger from '../logger/pino.logger';
+import logger from '../logger';
 import { entities } from './entities';
 import { seeds } from './seeds';
 

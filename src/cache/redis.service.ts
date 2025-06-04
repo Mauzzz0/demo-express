@@ -2,7 +2,7 @@ import { SetOptions } from '@redis/client';
 import { injectable } from 'inversify';
 import { createClient } from 'redis';
 import { appConfig } from '../config';
-import logger from '../logger/pino.logger';
+import logger from '../logger';
 
 @injectable()
 export class RedisService {

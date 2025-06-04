@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { createTransport, SentMessageInfo } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { appConfig } from '../../config';
-import logger from '../../logger/pino.logger';
+import logger from '../../logger';
 
 @injectable()
 export class MailService {

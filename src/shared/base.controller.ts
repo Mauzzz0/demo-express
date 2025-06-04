@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { injectable } from 'inversify';
-import logger from '../logger/pino.logger';
+import logger from '../logger';
 import { Route } from './types';
 
 @injectable()
