@@ -1,9 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
-import { BaseController } from '../../shared/base.controller';
-import { IdNumberDto } from '../../shared/id-number.dto';
-import { Route } from '../../shared/types';
+import { IdNumberDto } from '../../shared';
 import { validate } from '../../validation/validate';
 import { JwtService } from '../user/jwt.service';
 import { UserRole } from '../user/user.types';
@@ -11,34 +9,30 @@ import { CreateTaskDto, GetTaskListDto } from './task.dto';
 import { TaskService } from './task.service';
 
 @injectable()
-export class TaskController extends BaseController {
+export class TaskController {
+  public readonly router = Router();
+
   constructor(
     @inject(TaskService)
     private readonly service: TaskService,
     @inject(JwtService)
     private readonly jwtService: JwtService,
   ) {
-    super();
-    this.initRoutes();
-  }
+    const authentication = JwtGuard(this.jwtService);
+    const authorization = [authentication, RoleGuard(UserRole.admin)];
 
-  initRoutes() {
-    const middlewares = [JwtGuard(this.jwtService)];
+    // Create
+    this.router.post('/', authentication, (req: Request, res: Response) => this.create(req, res));
 
-    const routes: Route[] = [
-      { path: '/', method: 'post', handler: this.create, middlewares },
-      { path: '/', method: 'get', handler: this.getAll, middlewares },
-      { path: '/:id', method: 'get', handler: this.getOne, middlewares },
-      { path: '/:id', method: 'put', handler: this.update, middlewares },
-      {
-        path: '/:id',
-        method: 'delete',
-        handler: this.deleteOne,
-        middlewares: [...middlewares, RoleGuard(UserRole.admin)],
-      },
-    ];
+    // Read
+    this.router.get('/', authentication, (req: Request, res: Response) => this.getAll(req, res));
+    this.router.get('/:id', authentication, (req: Request, res: Response) => this.getOne(req, res));
 
-    this.addRoute(routes);
+    // Update
+    this.router.put('/:id', authentication, (req: Request, res: Response) => this.update(req, res));
+
+    // Delete
+    this.router.delete('/:id', authorization, (req: Request, res: Response) => this.deleteOne(req, res));
   }
 
   async create(req: Request, res: Response) {

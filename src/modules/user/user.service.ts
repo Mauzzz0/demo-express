@@ -118,6 +118,7 @@ export class UserService {
   }
 
   async profile(id: UserEntity['id']) {
+    logger.info(`Чтение профиля userId=${id}`);
     const user = await UserEntity.findByPk(id, { attributes: { exclude: ['password'] } });
 
     if (!user) {
@@ -137,6 +138,7 @@ export class UserService {
   }
 
   async getAll(params: PaginationDto) {
+    logger.info(`Чтение списка пользователей`);
     const { limit, offset } = params;
     const { rows, count } = await UserEntity.findAndCountAll({ limit, offset });
 

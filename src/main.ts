@@ -9,7 +9,7 @@ import { appConfig } from './config';
 import { connectToPostgres } from './database';
 import logger from './logger';
 import { createRabbitMQModule } from './message-broker/rabbitmq.module';
-import { ErrorHandler, LogMiddleware, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
+import { ErrorHandler, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
 import { createCronModule } from './modules/cron/cron.module';
 import { CronService } from './modules/cron/cron.service';
 import { createMailModule } from './modules/mail/mail.module';
@@ -53,7 +53,6 @@ const bootstrap = async () => {
   server.use(SessionMiddleware);
   server.use(ViewsMiddleware);
   server.use(express.json());
-  server.use(LogMiddleware);
   server.use(cors({ origin: '*' }));
 
   // * * * * * * * * * * * * * * * *

@@ -1,9 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { IdNumberDto, PaginationDto } from '../../shared';
-import { BaseController } from '../../shared/base.controller';
-import { Route } from '../../shared/types';
 import { validate } from '../../validation/validate';
 import { JwtService } from './jwt.service';
 import { ChangePasswordDto, LoginDto, RegisterDto, RestorePasswordDto, TokenDto } from './user.dto';
@@ -11,37 +9,37 @@ import { UserService } from './user.service';
 import { UserRole } from './user.types';
 
 @injectable()
-export class UserController extends BaseController {
+export class UserController {
+  public readonly router = Router();
+
   constructor(
     @inject(UserService)
     private readonly service: UserService,
     @inject(JwtService)
     private readonly jwtService: JwtService,
   ) {
-    super();
-    this.initRoutes();
-  }
+    const authentication = JwtGuard(this.jwtService);
+    const authorization = [authentication, RoleGuard(UserRole.admin)];
 
-  initRoutes() {
-    const middlewares = [JwtGuard(this.jwtService)];
-    const adminOnly = [...middlewares, RoleGuard(UserRole.admin)];
+    // Authentication
+    this.router.post('/login', (req: Request, res: Response) => this.login(req, res));
+    this.router.post('/logout', authentication, (req: Request, res: Response) => this.logout(req, res));
+    this.router.post('/refresh', (req: Request, res: Response) => this.refresh(req, res));
+    this.router.post('/register', (req: Request, res: Response) => this.register(req, res));
+    this.router.post('/password/restore', (req: Request, res: Response) => this.passwordRestore(req, res));
+    this.router.put('/password/change', (req: Request, res: Response) => this.passwordChange(req, res));
 
-    const routes: Route[] = [
-      { path: '', handler: this.list, middlewares: adminOnly },
-      { path: '/login', method: 'post', handler: this.login },
-      { path: '/register', method: 'post', handler: this.register },
-      { path: '/password/restore', method: 'post', handler: this.passwordRestore },
-      { path: '/password/change', method: 'put', handler: this.passwordChange },
-      { path: '/profile', handler: this.profile, middlewares },
-      { path: '/profile/telegram-link', handler: this.telegramLink, middlewares },
-      { path: '/profile/:id', handler: this.profileAdmin, middlewares: adminOnly },
-      { path: '/logout', method: 'post', handler: this.logout, middlewares },
-      { path: '/refresh', method: 'post', handler: this.refresh },
-      { path: '/:id/block', method: 'post', handler: this.blockUser, middlewares: adminOnly },
-      { path: '/:id/unblock', method: 'post', handler: this.unblockUser, middlewares: adminOnly },
-    ];
+    // Profile
+    this.router.get('/profile', authentication, (req: Request, res: Response) => this.profile(req, res));
+    this.router.get('/profile/telegram-link', authentication, (req: Request, res: Response) =>
+      this.telegramLink(req, res),
+    );
 
-    this.addRoute(routes);
+    // Admin methods. Other profiles or blocking
+    this.router.get('/', ...authorization, (req: Request, res: Response) => this.list(req, res));
+    this.router.get('/:id', ...authorization, (req: Request, res: Response) => this.profileAdmin(req, res));
+    this.router.post('/:id/block', ...authorization, (req: Request, res: Response) => this.blockUser(req, res));
+    this.router.post('/:id/unblock', ...authorization, (req: Request, res: Response) => this.unblockUser(req, res));
   }
 
   async passwordRestore(req: Request, res: Response) {
@@ -132,8 +130,8 @@ export class UserController extends BaseController {
   async register(req: Request, res: Response) {
     const body = validate(RegisterDto, req.body);
 
-    await this.service.register(body);
+    const profile = await this.service.register(body);
 
-    res.json({ success: true });
+    res.json(profile);
   }
 }
