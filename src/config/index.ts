@@ -11,7 +11,8 @@ type EnvStructure<T = any> = {
 const rawConfig: EnvStructure<AppConfigDto> = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
-  rabbitUri: process.env.RABBIT_URI,
+  rabbitUrl: process.env.RABBIT_URL,
+  redisUrl: process.env.REDIS_URL,
   telegramToken: process.env.TELEGRAM_TOKEN,
   admin: {
     nick: process.env.ADMIN_NICK,
@@ -32,13 +33,6 @@ const rawConfig: EnvStructure<AppConfigDto> = {
     username: process.env.POSTGRESQL_USERNAME,
     password: process.env.POSTGRESQL_PASSWORD,
     database: process.env.POSTGRESQL_DATABASE,
-  },
-  redis: {
-    host: process.env.REDIS_HOST,
-    database: process.env.REDIS_DATABASE,
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
-    port: process.env.REDIS_PORT,
   },
 };
 

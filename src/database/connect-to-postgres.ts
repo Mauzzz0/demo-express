@@ -16,7 +16,13 @@ export const connectToPostgres = async () => {
   sequelize.addModels(entities);
 
   // Ping database
-  await sequelize.authenticate();
+  try {
+    await sequelize.authenticate();
+  } catch (err) {
+    logger.error("Can't connect to Postgres:");
+    logger.error(err);
+    throw err;
+  }
 
   // Synchronize tables
   await sequelize.sync({ alter: true });

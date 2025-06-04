@@ -14,6 +14,7 @@ export class TelegramRabbitController {
   }
 
   async assertHandler() {
+    await this.rabbitMqService.channel.waitForConnect();
     await this.rabbitMqService.channel.consume(
       NEW_REGISTRATION_QUEUE,
       (data) => this.handleNewRegistrationQueue(data),
@@ -25,8 +26,6 @@ export class TelegramRabbitController {
   }
 
   async handleNewRegistrationQueue(data: ConsumeMessage) {
-    const json = JSON.parse(data.content.toString());
-
-    console.log(json);
+    console.log(data);
   }
 }

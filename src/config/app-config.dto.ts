@@ -1,6 +1,6 @@
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
-import { AdminConfigDto, JwtConfigDto, PostgresConfigDto, RedisConfigDto, SmtpConfigDto } from './dto';
+import { AdminConfigDto, JwtConfigDto, PostgresConfigDto, SmtpConfigDto } from './dto';
 
 export enum Environment {
   prod = 'prod',
@@ -16,7 +16,10 @@ export class AppConfigDto {
   port: number;
 
   @IsString()
-  rabbitUri: string;
+  rabbitUrl: string;
+
+  @IsString()
+  redisUrl: string;
 
   @ValidateNested()
   @Transform(({ value }) => plainToInstance(JwtConfigDto, value))
@@ -36,8 +39,4 @@ export class AppConfigDto {
   @ValidateNested()
   @Transform(({ value }) => plainToInstance(PostgresConfigDto, value))
   postgres: PostgresConfigDto;
-
-  @ValidateNested()
-  @Transform(({ value }) => plainToInstance(RedisConfigDto, value))
-  redis: RedisConfigDto;
 }

@@ -134,7 +134,7 @@ export class UserService {
       password: dto.password,
     });
 
-    await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, JSON.stringify(dto));
+    await this.rabbitMqService.channel.sendToQueue(NEW_REGISTRATION_QUEUE, dto);
 
     return this.profile(created.id);
   }
