@@ -2,6 +2,7 @@ import axios from 'axios';
 import { compare, hash } from 'bcrypt';
 import { CronJob } from 'cron';
 import { inject, injectable } from 'inversify';
+import { Op } from 'sequelize';
 import { v4 } from 'uuid';
 import {
   redisRefreshTokenKey,
@@ -20,7 +21,7 @@ import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { ChangePasswordDto, LoginDto, RegisterDto } from './dto';
-import { NewRegistrationMessage } from './user.types';
+import { NewRegistrationMessage, UserRole } from './user.types';
 
 @injectable()
 export class UserService {
@@ -31,7 +32,7 @@ export class UserService {
     @inject(RedisService) private readonly redis: RedisService,
     @inject(JwtService) private readonly jwtService: JwtService,
     @inject(RedisService) private readonly redisService: RedisService,
-    @inject(TelegramService) private readonly telegram: TelegramService,
+    @inject(TelegramService) private readonly telegramService: TelegramService,
     @inject(RabbitMqService) private readonly rabbitMqService: RabbitMqService,
   ) {
     this.loadTmpDomains();
@@ -68,6 +69,10 @@ export class UserService {
     );
   }
 
+  async getAllAdminsForTelegramMessages() {
+    return UserEntity.findAll({ where: { role: UserRole.admin, telegram: { [Op.not]: null } } });
+  }
+
   async passwordRestore(email: UserEntity['email']) {
     const user = await UserEntity.findOne({ where: { email } });
     if (!user) {
@@ -90,7 +95,7 @@ export class UserService {
     const key = v4();
     await this.redis.set(redisTelegramKey(key), { userId }, { expiration: { type: 'EX', value: TimeInSeconds.hour } });
 
-    const { username } = await this.telegram.bot.telegram.getMe();
+    const { username } = await this.telegramService.getBotInfo();
 
     const link = `https://t.me/${username}?start=${key}`;
 

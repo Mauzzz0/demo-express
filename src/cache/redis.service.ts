@@ -40,6 +40,6 @@ export class RedisService {
   }
 
   async delete(key: string) {
-    return await this.redis.del(key);
+    return this.redis.del(key);
   }
 }
