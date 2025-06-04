@@ -1,10 +1,8 @@
 import { Container } from 'inversify';
 import { RabbitMqService } from './rabbitmq.service';
 
-export const createRabbitMQModule = () => {
-  const container = new Container();
+const RabbitMqModule = new Container();
 
-  container.bind(RabbitMqService).toSelf().inSingletonScope();
+RabbitMqModule.bind(RabbitMqService).toSelf().inSingletonScope();
 
-  return container;
-};
+export default RabbitMqModule;

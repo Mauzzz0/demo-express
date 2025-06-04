@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { IdNumberDto } from '../../shared';
 import { validate } from '../../validation';
-import { JwtService } from '../user/jwt.service';
+import { JwtService } from '../jwt/jwt.service';
 import { UserRole } from '../user/user.types';
 import { CreateTaskDto, GetTaskListDto } from './dto';
 import { TaskService } from './task.service';

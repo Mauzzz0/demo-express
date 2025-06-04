@@ -2,11 +2,9 @@ import { Container } from 'inversify';
 import { TelegramRabbitController } from './telegram.rabbit-controller';
 import { TelegramService } from './telegram.service';
 
-export const createTelegramModule = () => {
-  const container = new Container();
+const TelegramModule = new Container();
 
-  container.bind(TelegramService).toSelf().inSingletonScope();
-  container.bind(TelegramRabbitController).toSelf().inSingletonScope();
+TelegramModule.bind(TelegramService).toSelf().inSingletonScope();
+TelegramModule.bind(TelegramRabbitController).toSelf().inSingletonScope();
 
-  return container;
-};
+export default TelegramModule;

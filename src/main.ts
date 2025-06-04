@@ -8,18 +8,16 @@ import RedisModule from './cache/redis.module';
 import { appConfig } from './config';
 import { connectToPostgres } from './database';
 import logger from './logger';
-import { createRabbitMQModule } from './message-broker/rabbitmq.module';
+import RabbitMqModule from './message-broker/rabbitmq.module';
 import { ErrorHandler, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
-import { createCronModule } from './modules/cron/cron.module';
-import { CronService } from './modules/cron/cron.service';
-import { createMailModule } from './modules/mail/mail.module';
+import JwtModule from './modules/jwt/jwt.module';
+import MailModule from './modules/mail/mail.module';
 import { TaskController } from './modules/task/task.controller';
-import { createTaskModule } from './modules/task/task.module';
-import { createTelegramModule } from './modules/telegram/telegram.module';
+import TaskModule from './modules/task/task.module';
+import TelegramModule from './modules/telegram/telegram.module';
 import { TelegramRabbitController } from './modules/telegram/telegram.rabbit-controller';
-import { TelegramService } from './modules/telegram/telegram.service';
 import { UserController } from './modules/user/user.controller';
-import { createUserModule } from './modules/user/user.module';
+import UserModule from './modules/user/user.module';
 import { setupSwagger } from './swagger/setup-swagger';
 
 const bootstrap = async () => {
@@ -27,13 +25,13 @@ const bootstrap = async () => {
   // DI Container
   // * * * * * * * * * * * * * * * *
   const app = Container.merge(
-    createUserModule(),
-    createTaskModule(),
-    createRabbitMQModule(),
+    UserModule,
+    TaskModule,
+    JwtModule,
+    RabbitMqModule,
     RedisModule,
-    createTelegramModule(),
-    createCronModule(),
-    createMailModule(),
+    TelegramModule,
+    MailModule,
   );
 
   // * * * * * * * * * * * * * * * *
@@ -84,17 +82,11 @@ const bootstrap = async () => {
   // * * * * * * * * * * * * * * * *
   logRoutes(server);
 
-  const telegram = app.get<TelegramService>(TelegramService);
-  await telegram.start();
-
-  const cron = app.get<CronService>(CronService);
-  cron.startJobs();
-
   // * * * * * * * * * * * * * * * *
   // Start Listening for Incoming HTTP Requests on Specified Port
   // * * * * * * * * * * * * * * * *
   server.listen(appConfig.port, () => {
-    logger.info(`Server is started on port ${appConfig.port}...`);
+    logger.info(`Server is started on port ${appConfig.port}`);
   });
 };
 

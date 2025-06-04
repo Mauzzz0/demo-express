@@ -1,10 +1,8 @@
 import { Container } from 'inversify';
 import { MailService } from './mail.service';
 
-export const createMailModule = () => {
-  const container = new Container();
+const MailModule = new Container();
 
-  container.bind(MailService).toSelf().inSingletonScope();
+MailModule.bind(MailService).toSelf().inSingletonScope();
 
-  return container;
-};
+export default MailModule;

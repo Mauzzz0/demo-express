@@ -16,10 +16,10 @@ import logger from '../../logger';
 import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq.queues';
 import { RabbitMqService } from '../../message-broker/rabbitmq.service';
 import { PaginationDto, TimeInSeconds } from '../../shared';
+import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { ChangePasswordDto, LoginDto, RegisterDto } from './dto';
-import { JwtService } from './jwt.service';
 
 @injectable()
 export class UserService {

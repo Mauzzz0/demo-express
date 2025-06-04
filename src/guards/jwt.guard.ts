@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { UserEntity } from '../database';
 import { UnauthorizedException } from '../exceptions';
-import { JwtService } from '../modules/user/jwt.service';
+import { JwtService } from '../modules/jwt/jwt.service';
 
 export const JwtGuard = (jwtService: JwtService) => async (req: Request, res: Response, next: NextFunction) => {
   // Get 'Authorization' header
