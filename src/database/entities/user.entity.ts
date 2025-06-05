@@ -1,5 +1,6 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { UserRole } from '../../modules/user/user.types';
+import { DepartmentEntity } from './department.entity';
 import { TaskEntity } from './task.entity';
 
 @Table({ tableName: 'users' })
@@ -37,6 +38,19 @@ export class UserEntity extends Model {
 
   @Column({ type: DataType.INTEGER, allowNull: true })
   public telegram: number;
+
+  @ForeignKey(() => DepartmentEntity)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  public departmentId: number;
+
+  @BelongsTo(() => DepartmentEntity, {
+    as: 'department',
+    foreignKey: 'departmentId',
+  })
+  public department: DepartmentEntity;
 
   @HasMany(() => TaskEntity, {
     as: 'authoredTasks',

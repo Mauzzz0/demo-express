@@ -12,6 +12,7 @@ import {
 } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
 import { UserEntity } from '../../database';
+import { DepartmentEntity } from '../../database/entities/department.entity';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../exceptions';
 import logger from '../../logger';
 import { NEW_REGISTRATION_QUEUE } from '../../message-broker/rabbitmq.queues';
@@ -125,7 +126,10 @@ export class UserService {
 
   async profile(id: UserEntity['id']) {
     logger.info(`Чтение профиля userId=${id}`);
-    const user = await UserEntity.findByPk(id, { attributes: { exclude: ['password'] } });
+    const user = await UserEntity.findByPk(id, {
+      attributes: { exclude: ['password'] },
+      include: [DepartmentEntity],
+    });
 
     if (!user) {
       throw new NotFoundException();

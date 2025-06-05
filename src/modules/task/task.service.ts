@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
 import { FindOptions, Op } from 'sequelize';
 import { TaskEntity, UserEntity } from '../../database';
+import { DepartmentEntity } from '../../database/entities/department.entity';
 import { NotFoundException } from '../../exceptions';
 import { PaginationDto } from '../../shared';
 import { CreateTaskDto, GetTaskListDto } from './dto';
@@ -8,12 +9,12 @@ import { CreateTaskDto, GetTaskListDto } from './dto';
 @injectable()
 export class TaskService {
   private readonly joinUsers = [
-    { model: UserEntity, as: 'author', attributes: ['id', 'name', 'email'] },
-    { model: UserEntity, as: 'assignee', attributes: ['id', 'name', 'email'] },
+    { model: UserEntity, as: 'author', attributes: ['id', 'name', 'email'], include: [DepartmentEntity] },
+    { model: UserEntity, as: 'assignee', attributes: ['id', 'name', 'email'], include: [DepartmentEntity] },
   ];
 
   async create(authorId: number, dto: CreateTaskDto) {
-    const assignee = await UserEntity.findOne({ where: { id: dto.assigneeId } });
+    const assignee = await UserEntity.findByPk(dto.assigneeId);
     if (!assignee) {
       throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
     }

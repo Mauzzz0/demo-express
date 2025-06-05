@@ -10,6 +10,8 @@ import { connectToPostgres } from './database';
 import logger from './logger';
 import RabbitMqModule from './message-broker/rabbitmq.module';
 import { ErrorHandler, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
+import { DepartmentController } from './modules/department/department.controller';
+import DepartmentModule from './modules/department/department.module';
 import JwtModule from './modules/jwt/jwt.module';
 import MailModule from './modules/mail/mail.module';
 import { TaskController } from './modules/task/task.controller';
@@ -27,6 +29,7 @@ const bootstrap = async () => {
   const app = Container.merge(
     UserModule,
     TaskModule,
+    DepartmentModule,
     JwtModule,
     RabbitMqModule,
     RedisModule,
@@ -57,9 +60,11 @@ const bootstrap = async () => {
   // HTTP Controllers
   // * * * * * * * * * * * * * * * *
   const userController = app.get(UserController);
+  const departmentController = app.get(DepartmentController);
   const taskController = app.get(TaskController);
 
   server.use('/user', userController.router);
+  server.use('/department', departmentController.router);
   server.use('/task', taskController.router);
 
   // * * * * * * * * * * * * * * * *
