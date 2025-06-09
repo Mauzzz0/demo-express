@@ -39,6 +39,3 @@ export const main = () => {
 };
 
 main();
-
-/anna.*/;
-new RegExp('anna.*');
