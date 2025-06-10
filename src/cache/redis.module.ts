@@ -3,6 +3,6 @@ import { RedisService } from './redis.service';
 
 const RedisModule = new Container();
 
-RedisModule.bind<RedisService>(RedisService).toSelf().inSingletonScope();
+RedisModule.bind(RedisService).toSelf().inSingletonScope();
 
 export default RedisModule;

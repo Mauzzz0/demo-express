@@ -19,7 +19,7 @@ export class RabbitMqService {
       await this.connection.connect({ timeout: 2000 });
       await this.channel.waitForConnect();
 
-      // Assert queues
+      // Assert (create) queues
       for (const queue of RABBIT_MQ_QUEUES) {
         await this.channel.assertQueue(queue, { durable: true });
       }
