@@ -1,13 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+  TooManyRequestsException,
+  UnauthorizedException,
+} from '../exceptions';
 import logger from '../logger';
 
 export const ErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error(err);
 
-  const status = err?.code ?? 500;
+  const customExceptions = [
+    NotFoundException,
+    UnauthorizedException,
+    ForbiddenException,
+    BadRequestException,
+    TooManyRequestsException,
+  ];
 
-  res.status(status).json({
+  const isCustomException = customExceptions.find((ex) => err instanceof ex);
+
+  res.status(isCustomException ? err?.code : 500).json({
     code: 'error',
-    message: err.message,
+    message: isCustomException ? err.message : 'Internal Server Error',
   });
 };
