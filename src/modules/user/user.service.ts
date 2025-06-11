@@ -11,7 +11,7 @@ import {
   redisTempMailKey,
 } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
-import { UserEntity } from '../../database';
+import { LoginHistoryEntity, UserEntity } from '../../database';
 import { DepartmentEntity } from '../../database/entities/department.entity';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../exceptions';
 import logger from '../../logger';
@@ -22,11 +22,14 @@ import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { ChangePasswordDto, LoginDto, RegisterDto } from './dto';
-import { NewRegistrationMessage, UserRole } from './user.types';
+import { LoginEvent, NewRegistrationMessage, UserRole } from './user.types';
 
 @injectable()
 export class UserService {
   private readonly refreshTempDomainsJob = new CronJob('0 */6 * * *', () => this.loadTmpDomains(), null, true);
+  private readonly saveLoginBufferJob = new CronJob('*/10 * * * * *', () => this.saveLoginBuffer(), null, true);
+
+  private loginBuffer: LoginEvent[] = [];
 
   constructor(
     @inject(MailService) private readonly mail: MailService,
@@ -60,6 +63,19 @@ export class UserService {
       logger.error("Can't update temp domains ");
       logger.error(error);
     }
+  }
+
+  private async saveLoginBuffer() {
+    if (!this.loginBuffer.length) {
+      logger.info('Skip saving login buffer - buffer is empty');
+      return;
+    }
+
+    logger.info(`Saving login buffer. Logs - ${this.loginBuffer.length}`);
+
+    await LoginHistoryEntity.bulkCreate(this.loginBuffer);
+
+    this.loginBuffer = [];
   }
 
   private async setNewRefreshToken(userId: number, token: string) {
@@ -155,21 +171,40 @@ export class UserService {
     return { total: count, limit, offset, data: rows };
   }
 
-  async login(dto: LoginDto) {
-    const user = await UserEntity.findOne({ where: { email: dto.email } });
+  async login(dto: LoginDto, ip?: string) {
+    const { email, password } = dto;
 
-    if (!user || !(await compare(dto.password, user.password))) {
+    const user = await UserEntity.findOne({ where: { email } });
+
+    if (!user) {
+      this.saveLoginEvent({ ip, email, success: false, failReason: 'User does not exists' });
+      throw new UnauthorizedException('User does not exists or password is wrong');
+    }
+
+    if (!(await compare(password, user.password))) {
+      this.saveLoginEvent({ ip, email, success: false, failReason: 'Incorrect password' });
       throw new UnauthorizedException('User does not exists or password is wrong');
     }
 
     if (!user.active) {
+      this.saveLoginEvent({ ip, email, success: false, failReason: 'User blocked' });
       throw new ForbiddenException();
     }
 
     const tokens = this.jwtService.makeTokenPair(user);
     await this.setNewRefreshToken(user.id, tokens.refreshToken);
 
+    this.saveLoginEvent({ ip, email, success: true });
+
     return tokens;
+  }
+
+  private saveLoginEvent(event: Omit<LoginEvent, 'time' | 'ip'> & Partial<Pick<LoginEvent, 'ip'>>) {
+    this.loginBuffer.push({
+      ...event,
+      time: new Date().toISOString(),
+      ip: event.ip ?? 'unknown',
+    });
   }
 
   async register(dto: RegisterDto) {

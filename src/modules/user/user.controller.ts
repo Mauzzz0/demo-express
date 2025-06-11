@@ -107,7 +107,7 @@ export class UserController {
   async login(req: Request, res: Response) {
     const body = validate(LoginDto, req.body);
 
-    const tokens = await this.service.login(body);
+    const tokens = await this.service.login(body, req.ip);
 
     res.json(tokens);
   }

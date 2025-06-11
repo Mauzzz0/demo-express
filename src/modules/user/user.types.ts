@@ -10,3 +10,11 @@ export type NewRegistrationMessage = {
   email: UserEntity['email'];
   name: UserEntity['name'];
 };
+
+export type LoginEvent = {
+  time: string;
+  ip: string;
+  email: string;
+  success: boolean;
+  failReason?: string;
+};
