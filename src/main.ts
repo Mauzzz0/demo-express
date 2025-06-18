@@ -26,7 +26,9 @@ const bootstrap = async () => {
   // * * * * * * * * * * * * * * * *
   // DI Container
   // * * * * * * * * * * * * * * * *
-  const app = Container.merge(
+  const appContainer = new Container();
+
+  await appContainer.load(
     UserModule,
     TaskModule,
     DepartmentModule,
@@ -59,9 +61,9 @@ const bootstrap = async () => {
   // * * * * * * * * * * * * * * * *
   // HTTP Controllers
   // * * * * * * * * * * * * * * * *
-  const userController = app.get(UserController);
-  const departmentController = app.get(DepartmentController);
-  const taskController = app.get(TaskController);
+  const userController = appContainer.get(UserController);
+  const departmentController = appContainer.get(DepartmentController);
+  const taskController = appContainer.get(TaskController);
 
   server.use('/user', userController.router);
   server.use('/department', departmentController.router);
@@ -70,7 +72,7 @@ const bootstrap = async () => {
   // * * * * * * * * * * * * * * * *
   // AMQP Controllers. Forced manual instantiating
   // * * * * * * * * * * * * * * * *
-  app.get(UserAmqpController);
+  appContainer.get(UserAmqpController);
 
   // * * * * * * * * * * * * * * * *
   // Configure Swagger
