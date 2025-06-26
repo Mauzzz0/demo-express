@@ -220,12 +220,20 @@ export class UserService {
       throw new BadRequestException('User with this email already exists');
     }
 
+    if (dto.departmentId) {
+      const department = await DepartmentEntity.findByPk(dto.departmentId);
+      if (!department) {
+        throw new NotFoundException(`Department with id=${dto.departmentId} not found`);
+      }
+    }
+
     dto.password = await this.hashPassword(dto.password);
 
     const created = await UserEntity.create({
       email: dto.email,
       name: dto.name,
       password: dto.password,
+      departmentId: dto.departmentId,
     });
 
     const message: NewRegistrationMessage = {

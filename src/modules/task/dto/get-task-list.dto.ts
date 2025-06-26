@@ -15,7 +15,7 @@ export class GetTaskListDto extends PaginationDto {
 
   @IsEnum(SortDirection)
   @IsOptional()
-  sortDirection: TaskSortByEnum = TaskSortByEnum.title;
+  sortDirection: SortDirection = SortDirection.asc;
 
   @IsString()
   @IsOptional()
