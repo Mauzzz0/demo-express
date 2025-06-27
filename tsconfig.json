@@ -1,4 +1,6 @@
 {
+  "include": ["./src"],
+
   "compilerOptions": {
     // В какую версию JS нужно скомпилировать наш TS код
     "target": "es2020",
