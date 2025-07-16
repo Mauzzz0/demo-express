@@ -7,7 +7,10 @@
     "build": "tsc",
     "start": "ts-node src/main.ts",
     "start:prod": "node ./dist/main.js",
-    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0"
+    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",
+    "migrate": "npm run build && npx sequelize-cli db:migrate",
+    "migrate:undo": "npm run build && npx sequelize-cli db:migrate:undo",
+    "migrate:generate": "npx ts-node src/database/migrations/generate.ts"
   },
   "prettier": {
     "singleQuote": true,
