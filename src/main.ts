@@ -8,6 +8,7 @@ import RedisModule from './cache/redis.module';
 import { appConfig } from './config';
 import { connectToPostgres } from './database';
 import logger from './logger';
+import { memoryLeak } from './memory-leak';
 import RabbitMqModule from './message-broker/rabbitmq.module';
 import { ErrorHandler, RateLimiter, SessionMiddleware, ViewsMiddleware } from './middlewares';
 import { DepartmentController } from './modules/department/department.controller';
@@ -57,6 +58,7 @@ const bootstrap = async () => {
   server.use(ViewsMiddleware);
   server.use(express.json());
   server.use(cors({ origin: '*' }));
+  server.use('/memory-leak', memoryLeak);
 
   // * * * * * * * * * * * * * * * *
   // HTTP Controllers

@@ -5,7 +5,7 @@ const stream = pretty({
   colorize: true,
   sync: true,
   translateTime: 'HH:MM:ss',
-  ignore: 'pid,hostname',
+  ignore: 'hostname',
 });
 
 const logger = pino(stream);
