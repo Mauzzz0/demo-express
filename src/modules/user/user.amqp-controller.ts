@@ -21,6 +21,7 @@ export class UserAmqpController {
 
   async assertHandler() {
     await this.rabbitMqService.channel.waitForConnect();
+    await this.rabbitMqService.channel.assertQueue(NEW_REGISTRATION_QUEUE, { durable: true });
     await this.rabbitMqService.channel.consume(
       NEW_REGISTRATION_QUEUE,
       (data) => this.handleNewRegistrationQueue(JSON.parse(data.content.toString('utf-8'))),
