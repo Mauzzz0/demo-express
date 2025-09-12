@@ -13,5 +13,6 @@ export class CreateTaskDto {
   severity?: TaskSeverity;
 
   @IsNumber()
-  assigneeId: number;
+  @IsOptional()
+  assigneeId?: number;
 }

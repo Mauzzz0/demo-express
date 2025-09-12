@@ -27,9 +27,11 @@ export class TaskService {
   async create(authorId: number, dto: CreateTaskDto) {
     logger.info(`Создание задачи ${dto.title}`);
 
-    const assignee = await UserEntity.findByPk(dto.assigneeId);
-    if (!assignee) {
-      throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
+    if (dto.assigneeId) {
+      const assignee = await UserEntity.findByPk(dto.assigneeId);
+      if (!assignee) {
+        throw new NotFoundException(`User with id [${dto.assigneeId}] is not exist`);
+      }
     }
 
     return TaskEntity.create({ ...dto, authorId });

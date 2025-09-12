@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управления задачами</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            transition: transform 0.2s;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .btn-logout {
+            color: #dc3545;
+        }
+        .btn-logout:hover {
+            color: #fff;
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="navBrand">
+                <i class="fas fa-tasks me-2"></i>Задачи
+            </a>
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light btn-sm" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container mt-4">
+        <!-- Страница логина -->
+        <div id="loginPage">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title text-center mb-4">
+                                <i class="fas fa-user-circle text-primary me-2"></i>Вход в систему
+                            </h4>
+
+                            <!-- Форма входа -->
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Войти
+                                </button>
+                            </form>
+
+                            <hr>
+
+                            <!-- Форма регистрации -->
+                            <h5 class="text-center mb-3">Новый пользователь?</h5>
+                            <form id="registerForm">
+                                <div class="mb-3">
+                                    <label for="registerName" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="registerName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-user-plus me-1"></i>Зарегистрироваться
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница задач -->
+        <div id="tasksPage" class="hidden">
+            <!-- Заголовок и кнопка добавления -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tasks text-primary me-2"></i>Мои задачи</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal">
+                    <i class="fas fa-plus me-1"></i>Добавить задачу
+                </button>
+            </div>
+
+            <!-- Фильтры и поиск -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Поиск задач...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="orderBySelect">
+                        <option value="createdAt">По дате создания</option>
+                        <option value="title">По названию</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="orderDirectionSelect">
+                        <option value="desc">По убыванию</option>
+                        <option value="asc">По возрастанию</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Список задач -->
+            <div id="tasksList" class="row">
+                <!-- Задачи будут загружены динамически -->
+            </div>
+
+            <!-- Пагинация -->
+            <nav aria-label="Навигация по страницам" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- Пагинация будет создана динамически -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Модальное окно для создания/редактирования задачи -->
+    <div class="modal fade" id="taskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalTitle">Добавить задачу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <input type="hidden" id="taskId">
+                        <div class="mb-3">
+                            <label for="taskTitle" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="taskTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskDescription" class="form-label">Описание</label>
+                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="saveTaskBtn">
+                        <i class="fas fa-save me-1"></i>Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить эту задачу?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-1"></i>Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Уведомление</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Сообщение будет вставлено динамически -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Конфигурация API
+        const API_BASE_URL = 'http://localhost:2000';
+
+        // Глобальные переменные
+        let currentUser = null;
+        let currentPage = 1;
+        let tasksPerPage = 6;
+        let totalTasks = 0;
+        let currentFilters = {
+            search: '',
+            sortBy: 'createdAt',
+            sortDirection: 'desc'
+        };
+        let searchTimeout = null;
+
+        // Утилиты
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type === 'error' ? 'bg-danger text-white' : ''}`;
+
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        function setLoading(element, loading = true) {
+            if (loading) {
+                element.classList.add('loading');
+            } else {
+                element.classList.remove('loading');
+            }
+        }
+
+        // Аутентификация
+        function saveToken(token) {
+            localStorage.setItem('accessToken', token);
+        }
+
+        function getToken() {
+            return localStorage.getItem('accessToken');
+        }
+
+        function clearToken() {
+            localStorage.removeItem('accessToken');
+        }
+
+        function isAuthenticated() {
+            return getToken() !== null;
+        }
+
+        // API запросы
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${API_BASE_URL}${endpoint}`;
+            const token = getToken();
+
+            const finalOptions = {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (token) {
+              finalOptions.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                const response = await fetch(url, finalOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Ошибка сервера');
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Функции аутентификации
+        async function login(credentials) {
+            try {
+                const response = await apiRequest('/user/login', {
+                    method: 'POST',
+                    body: JSON.stringify(credentials)
+                });
+
+                saveToken(response.accessToken);
+                currentUser = { email: credentials.email };
+                showPage('tasks');
+                showNotification('Успешный вход в систему!', 'success');
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        async function register(userData) {
+            try {
+                await apiRequest('/user/register', {
+                    method: 'POST',
+                    body: JSON.stringify(userData),
+                });
+
+                showNotification('Регистрация успешна! Теперь вы можете войти в систему.', 'success');
+                // Очищаем форму регистрации
+                document.getElementById('registerForm').reset();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        function logout() {
+            clearToken();
+            currentUser = null;
+            showPage('login');
+            showNotification('Вы вышли из системы');
+        }
+
+        // Управление страницами
+        function showPage(page) {
+            const loginPage = document.getElementById('loginPage');
+            const tasksPage = document.getElementById('tasksPage');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (page === 'login') {
+                loginPage.classList.remove('hidden');
+                tasksPage.classList.add('hidden');
+                logoutBtn.style.display = 'none';
+            } else if (page === 'tasks') {
+                loginPage.classList.add('hidden');
+                tasksPage.classList.remove('hidden');
+                logoutBtn.style.display = 'block';
+                loadTasks();
+            }
+        }
+
+        // Функции для работы с задачами
+        async function loadTasks() {
+            try {
+                setLoading(document.getElementById('tasksList'), true);
+
+                const offset = (currentPage - 1) * tasksPerPage;
+                const params = new URLSearchParams({
+                    limit: tasksPerPage,
+                    offset: offset,
+                    ...currentFilters
+                });
+
+                const response = await apiRequest(`/task?${params}`);
+                totalTasks = response.total;
+
+                displayTasks(response.data);
+                updatePagination();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                setLoading(document.getElementById('tasksList'), false);
+            }
+        }
+
+        function displayTasks(tasks) {
+            const tasksList = document.getElementById('tasksList');
+
+            if (tasks.length === 0) {
+                tasksList.innerHTML = `
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Задач не найдено</h5>
+                            <p class="text-muted">Создайте свою первую задачу!</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map(task => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card task-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${task.title}</h5>
+                            <p class="card-text">${task.description || 'Без описания'}</p>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                ${new Date(task.createdAt).toLocaleDateString('ru-RU')}
+                            </small>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-outline-primary btn-sm" onclick="editTask('${task.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm delete-task-btn" data-task-id="${task.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(totalTasks / tasksPerPage);
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Предыдущая страница
+            paginationHTML += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Предыдущая</a>
+                </li>
+            `;
+
+            // Номера страниц
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHTML += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                        </li>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            // Следующая страница
+            paginationHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Следующая</a>
+                </li>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(totalTasks / tasksPerPage)) return;
+            currentPage = page;
+            loadTasks();
+        }
+
+        // CRUD операции с задачами
+        async function createTask(taskData) {
+            try {
+                await apiRequest('/task', {
+                    method: 'POST',
+                    body: JSON.stringify(taskData)
+                });
+
+                showNotification('Задача создана успешно!');
+                loadTasks();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        async function updateTask(taskId, taskData) {
+            try {
+                await apiRequest(`/task/${taskId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(taskData)
+                });
+
+                showNotification('Задача обновлена успешно!');
+                loadTasks();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        async function deleteTask(taskId) {
+            try {
+                await apiRequest(`/task/${taskId}`, {
+                    method: 'DELETE'
+                });
+
+                showNotification('Задача удалена успешно!');
+                loadTasks();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        function editTask(taskId) {
+            // Загружаем данные задачи для редактирования
+            apiRequest(`/task/${taskId}`)
+                .then(task => {
+                    document.getElementById('taskId').value = task.id;
+                    document.getElementById('taskTitle').value = task.title;
+                    document.getElementById('taskDescription').value = task.description || '';
+                    document.getElementById('taskModalTitle').textContent = 'Редактировать задачу';
+
+                    const modal = new bootstrap.Modal(document.getElementById('taskModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    showNotification(error.message, 'error');
+                });
+        }
+
+        function confirmDeleteTask(taskId) {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+
+            // Сохраняем ID задачи в data-атрибут модального окна
+            document.getElementById('deleteModal').setAttribute('data-task-id', taskId);
+        }
+
+        // Утилиты
+        // function escapeHtml(text) {
+        //     const div = document.createElement('div');
+        //     div.textContent = text;
+        //     return div.innerHTML;
+        // }
+
+        // Обработчики событий
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const credentials = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+          login(credentials);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value
+            };
+            register(userData);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Обработчик для кнопки подтверждения удаления
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            const taskId = document.getElementById('deleteModal').getAttribute('data-task-id');
+            if (taskId) {
+                deleteTask(taskId);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+            }
+        });
+
+        // Обработчик для кнопок удаления задач (делегирование событий)
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.delete-task-btn')) {
+                const taskId = e.target.closest('.delete-task-btn').getAttribute('data-task-id');
+                confirmDeleteTask(taskId);
+            }
+        });
+
+        document.getElementById('saveTaskBtn').addEventListener('click', () => {
+            const taskId = document.getElementById('taskId').value;
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+
+            if (!title.trim()) {
+                showNotification('Название задачи обязательно!', 'error');
+                return;
+            }
+
+            const taskData = {
+                title: title.trim(),
+                description: description.trim()
+            };
+
+            if (taskId) {
+                updateTask(taskId, taskData);
+            } else {
+                createTask(taskData);
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+            modal.hide();
+
+            // Очищаем форму
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskModalTitle').textContent = 'Добавить задачу';
+        });
+
+        // Обработчики фильтров
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            // Очищаем предыдущий таймаут
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            // Устанавливаем новый таймаут на 500мс
+            searchTimeout = setTimeout(() => {
+                currentFilters.search = e.target.value;
+                currentPage = 1;
+                loadTasks();
+            }, 500);
+        });
+
+        document.getElementById('orderBySelect').addEventListener('change', (e) => {
+            currentFilters.sortBy = e.target.value; // createdAt
+            currentPage = 1;
+            loadTasks();
+        });
+
+        document.getElementById('orderDirectionSelect').addEventListener('change', (e) => {
+            currentFilters.sortDirection = e.target.value;
+            currentPage = 1;
+            loadTasks();
+        });
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isAuthenticated()) {
+                showPage('tasks');
+            } else {
+                showPage('login');
+            }
+        });
+
+        // Глобальные функции для вызова из HTML
+        window.editTask = editTask;
+        window.changePage = changePage;
+    </script>
+</body>
+</html>
