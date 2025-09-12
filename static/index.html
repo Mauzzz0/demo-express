@@ -121,14 +121,16 @@
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" id="orderBySelect">
-                        <option value="createdAt">По дате создания</option>
-                        <option value="title">По названию</option>
+                      <option value="">Не выбрано</option>
+                      <option value="createdAt">По дате создания</option>
+                      <option value="title">По названию</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" id="orderDirectionSelect">
-                        <option value="desc">По убыванию</option>
-                        <option value="asc">По возрастанию</option>
+                      <option value="">Не выбрано</option>
+                      <option value="desc">По убыванию</option>
+                      <option value="asc">По возрастанию</option>
                     </select>
                 </div>
             </div>
@@ -225,8 +227,8 @@
         let totalTasks = 0;
         let currentFilters = {
             search: '',
-            sortBy: 'createdAt',
-            sortDirection: 'desc'
+            sortBy: '',
+            sortDirection: ''
         };
         let searchTimeout = null;
 
@@ -364,7 +366,9 @@
                 const params = new URLSearchParams({
                     limit: tasksPerPage,
                     offset: offset,
-                    ...currentFilters
+                  ...(currentFilters.search ? { search: currentFilters.search } : {}),
+                  ...(currentFilters.sortBy ? { sortBy: currentFilters.sortBy } : {}),
+                  ...(currentFilters.sortDirection ? { sortDirection: currentFilters.sortDirection } : {}),
                 });
 
                 const response = await apiRequest(`/task?${params}`);
@@ -627,7 +631,7 @@
         });
 
         document.getElementById('orderBySelect').addEventListener('change', (e) => {
-            currentFilters.sortBy = e.target.value; // createdAt
+            currentFilters.sortBy = e.target.value;
             currentPage = 1;
             loadTasks();
         });
