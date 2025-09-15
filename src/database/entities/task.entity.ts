@@ -1,11 +1,6 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { TaskSeverity } from '../../modules/task/task.enums';
 import { UserEntity } from './user.entity';
-
-export enum TaskSeverity {
-  low = 'low',
-  medium = 'medium',
-  high = 'high',
-}
 
 @Table({ tableName: 'tasks' })
 export class TaskEntity extends Model {

@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TaskSeverity } from '../../../database';
+import { TaskSeverity } from '../task.enums';
 
 export class UpdateTaskDto {
   @IsString()
