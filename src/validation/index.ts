@@ -10,7 +10,7 @@ export const validate = <T extends object, V>(dto: ClassConstructor<T>, plain: V
     const [{ constraints }] = errors;
 
     if (constraints) {
-      throw new BadRequestException(constraints[Object.keys(constraints)[0]]);
+      throw new BadRequestException(Object.values(constraints)[0]);
     }
 
     throw new BadRequestException('Unknown validation error');
