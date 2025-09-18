@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управления задачами</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            transition: transform 0.2s;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .btn-logout {
+            color: #dc3545;
+        }
+        .btn-logout:hover {
+            color: #fff;
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="navBrand">
+                <i class="fas fa-tasks me-2"></i>Задачи
+            </a>
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light btn-sm" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container mt-4">
+        <!-- Страница логина -->
+        <div id="loginPage">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title text-center mb-4">
+                                <i class="fas fa-user-circle text-primary me-2"></i>Вход в систему
+                            </h4>
+
+                            <!-- Форма входа -->
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Войти
+                                </button>
+                            </form>
+
+                            <hr>
+
+                            <!-- Форма регистрации -->
+                            <h5 class="text-center mb-3">Новый пользователь?</h5>
+                            <form id="registerForm">
+                                <div class="mb-3">
+                                    <label for="registerName" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="registerName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-user-plus me-1"></i>Зарегистрироваться
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница задач -->
+        <div id="tasksPage" class="hidden">
+            <!-- Заголовок и кнопка добавления -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tasks text-primary me-2"></i>Мои задачи</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal">
+                    <i class="fas fa-plus me-1"></i>Добавить задачу
+                </button>
+            </div>
+
+            <!-- Фильтры и поиск -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Поиск задач...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="orderBySelect">
+                      <option value="">Не выбрано</option>
+                      <option value="createdAt">По дате создания</option>
+                      <option value="title">По названию</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="orderDirectionSelect">
+                      <option value="">Не выбрано</option>
+                      <option value="desc">По убыванию</option>
+                      <option value="asc">По возрастанию</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Список задач -->
+            <div id="tasksList" class="row">
+                <!-- Задачи будут загружены динамически -->
+            </div>
+
+            <!-- Пагинация -->
+            <nav aria-label="Навигация по страницам" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- Пагинация будет создана динамически -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Модальное окно для создания/редактирования задачи -->
+    <div class="modal fade" id="taskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalTitle">Добавить задачу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <input type="hidden" id="taskId">
+                        <div class="mb-3">
+                            <label for="taskTitle" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="taskTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskDescription" class="form-label">Описание</label>
+                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="saveTaskBtn">
+                        <i class="fas fa-save me-1"></i>Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить эту задачу?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-1"></i>Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Уведомление</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Сообщение будет вставлено динамически -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"/>
+</body>
+</html>

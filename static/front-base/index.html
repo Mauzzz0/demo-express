@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Система управления задачами</title>
+</head>
+<body>
+
+<h1>Создание задачи</h1>
+<label for="title">Title:</label><br>
+<input type="text" id="title" name="title" required><br><br>
+<label for="description">Description:</label><br>
+<textarea id="description" name="description" rows="4" cols="50" required></textarea><br><br>
+<button type="submit" onclick="createTask()">Отправить</button>
+
+<h1>Список задач</h1>
+<p id="pagination"></p>
+
+<button onclick="loadTaskList()">Загрузить список</button>
+<ul id="task-list"></ul>
+</body>
+
+<script>
+  async function getTaskList() {
+    const response = await fetch('http://localhost:2000/task');
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Ошибка сервера');
+    }
+
+    return data;
+  }
+
+  async function loadTaskList() {
+    const getTaskResponse = await getTaskList(); // Вот здесь ответ от сервера, например { total: 10, limit: 10, offset: 0, data: [{id, title, description}, {id, title, description}] }
+
+    const paginationParagraph = document.getElementById('pagination');
+    paginationParagraph.textContent = `Показаны задачи с ${getTaskResponse.offset} по ${getTaskResponse.offset + getTaskResponse.limit} (Всего ${getTaskResponse.total} задач)`;
+
+    // const list = document.createElement('li');
+    const list = document.getElementById('task-list');
+
+    getTaskResponse.data.forEach((task) => {
+      const li = document.createElement('li');
+
+      li.textContent = task.title;
+
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = `X (По нажатию вызовется deleteTask конкретно с id этой задачи (${task.id}))`;
+      deleteButton.addEventListener('click', () => deleteTask(task.id));
+
+      list.appendChild(li).appendChild(deleteButton);
+    });
+  }
+
+  async function deleteTask(id) {
+    // Отправляем DELETE /task/:id запрос
+    const response = await fetch(`http://localhost:2000/task/${id}`, { method: 'DELETE' });
+    const data = await response.json();
+
+    if (response.ok) {
+      alert(`Задача ${id} успешно удалена`);
+    } else {
+      alert(data.message || 'Ошибка сервера');
+    }
+  }
+
+  async function createTask() {
+    try {
+      const body = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+      };
+
+      const response = await fetch('http://localhost:2000/task', { method: 'POST', body: JSON.stringify(body) });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Ошибка сервера');
+      }
+
+      alert('Задача успешно создана!');
+    } catch (error) {
+      console.error('API Error:', error);
+      alert(error.message);
+    }
+  }
+
+</script>
+</html>

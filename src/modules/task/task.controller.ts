@@ -27,8 +27,8 @@ export class TaskController {
     // Read
     this.router.get('/authored', authentication, (req: Request, res: Response) => this.getAuthored(req, res));
     this.router.get('/assigned', authentication, (req: Request, res: Response) => this.getAssigned(req, res));
-    this.router.get('/', authentication, (req: Request, res: Response) => this.getAll(req, res));
-    this.router.get('/:id', authentication, (req: Request, res: Response) => this.getOne(req, res));
+    this.router.get('/', (req: Request, res: Response) => this.getAll(req, res));
+    this.router.get('/:id', (req: Request, res: Response) => this.getOne(req, res));
 
     // Update
     this.router.put('/:id', authentication, (req: Request, res: Response) => this.update(req, res));
